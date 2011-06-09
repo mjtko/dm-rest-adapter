@@ -52,6 +52,13 @@ methods as datamapper including during creation.
  p.save
  # => saves the resource on the remote
 
+== Format Extensions
+
+By default, dm-rest-adapter will add the appropriate suffix for the format you're using.  For
+example, when the format is "json", dm-rest-adapter will append ".json" to all paths.  If your
+URLs use a different extension, you may use the `:extension` option in `#setup`.  Passing `nil`
+or an empty string means no extension will be appended at all.
+
 == Caveat
 
 Posts do not honor RESTful HTTP status codes. I might fix this...

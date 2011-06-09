@@ -61,7 +61,8 @@ module DataMapperRest
 
     def initialize(*)
       super
-      @format = @options.fetch(:format, 'xml')
+      format = @options.fetch(:format, 'xml')
+      @format = Format.new(format, @options.fetch(:extension, format))
     end
 
     def connection

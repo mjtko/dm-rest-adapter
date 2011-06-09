@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Scott Burton @ Joyent Inc"]
-  s.date = %q{2011-05-05}
+  s.date = %q{2011-06-10}
   s.description = %q{REST Adapter for DataMapper}
   s.email = %q{scott.burton [a] joyent [d] com}
   s.extra_rdoc_files = [
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "spec/fixtures/difficult_book.rb",
     "spec/rcov.opts",
     "spec/semipublic/connection_spec.rb",
+    "spec/semipublic/format_spec.rb",
     "spec/semipublic/rest_adapter_spec.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb",
@@ -43,12 +44,13 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/datamapper/dm-rest-adapter}
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{datamapper}
-  s.rubygems_version = %q{1.7.2}
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{REST Adapter for DataMapper}
   s.test_files = [
     "spec/fixtures/book.rb",
     "spec/fixtures/difficult_book.rb",
     "spec/semipublic/connection_spec.rb",
+    "spec/semipublic/format_spec.rb",
     "spec/semipublic/rest_adapter_spec.rb",
     "spec/spec_helper.rb"
   ]

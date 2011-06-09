@@ -8,7 +8,7 @@ module DataMapperRest
 
     def initialize(uri, format)
       @uri = uri
-      @format = Format.new(format)
+      @format = format
     end
 
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
@@ -19,7 +19,9 @@ module DataMapperRest
         orig_uri, @uri = @uri, @uri.dup
         begin
           path, query = args[0].split('?', 2)
-          @uri.path = "#{path}.#{@format.extension}#{'?' << query if query}" # Should be the form of /resources
+          suffix = ".#{@format.extension}" if @format.extension
+          
+          @uri.path = "#{path}#{suffix}#{'?' << query if query}" # Should be the form of /resources
           run_verb(verb.to_s.split('_').last, args[1])
         ensure
           @uri = orig_uri

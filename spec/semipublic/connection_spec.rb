@@ -13,7 +13,7 @@ describe 'A Connection instance' do
       :port     => '4000',
       :query    => nil
     )
-    @connection = DataMapperRest::Connection.new(@uri, "xml")
+    @connection = DataMapperRest::Connection.new(@uri, DataMapperRest::Format.new("xml", "xml"))
   end
 
   it "should construct a valid uri" do
@@ -22,15 +22,6 @@ describe 'A Connection instance' do
     @connection.uri.port.should == 4000
     @connection.uri.user.should == @username
     @connection.uri.password.should == @password
-  end
-
-  it "should return the correct extension and mime type for xml" do
-    @connection.format.header.should == {'Content-Type' => "application/xml"}
-  end
-
-  it "should return the correct extension and mime type for json" do
-    connection = DataMapperRest::Connection.new(@uri, "json")
-    connection.format.header.should == {'Content-Type' => "application/json"}
   end
 
   describe 'when running the verb methods' do
