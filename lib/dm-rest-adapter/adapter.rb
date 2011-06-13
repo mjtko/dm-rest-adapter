@@ -7,7 +7,7 @@ module DataMapperRest
         model = resource.model
 
         response = @client[@format.resource_path(model)].post(
-          @format.format_as_string(resource),
+          @format.string_representation(resource),
           :content_type => @format.mime
         )
 
@@ -40,7 +40,7 @@ module DataMapperRest
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
         response = @client[@format.resource_path(model, id)].put(
-          @format.format_as_string(resource),
+          @format.string_representation(resource),
           :content_type => @format.mime
         )
 

@@ -5,7 +5,7 @@ module DataMapperRest
         { :mime => "application/xml", :extension => "xml" }
       end
       
-      def format_as_string(resource)
+      def string_representation(resource)
         resource.to_xml
       end
       

@@ -30,9 +30,9 @@ module DataMapperRest
         path
       end
       
-      def format_as_string(resource)
+      def string_representation(resource)
         raise NotImplementedError,
-          "#{self.class}#format_as_string not implemented"
+          "#{self.class}#string_representation not implemented"
       end
       
       def update_with_response(resource, body)
