@@ -17,11 +17,15 @@ module DataMapperRest
         {}
       end
 
-      def resource_path(name, key = nil)
+      def resource_name(adapter, model)
+        model.storage_name(adapter.name)
+      end
+
+      def resource_path(adapter, model, key = nil)
         path = if key
-          "#{name}/#{key}"
+          "#{resource_name(adapter, model)}/#{key}"
         else
-          name
+           "#{resource_name(adapter, model)}"
         end
         
         if @extension
@@ -29,6 +33,10 @@ module DataMapperRest
         else
           path
         end
+      end
+      
+      def update_with_response(adapter, resource, body)
+        raise NotImplementedError, "#{self.class}#update_with_response not implemented"
       end
     end
   end
