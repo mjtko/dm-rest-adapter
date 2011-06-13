@@ -8,7 +8,14 @@ module DataMapperRest
 
     def initialize(uri, format)
       @uri = uri
-      @format = Format.new(format)
+      case format
+        when "xml"
+          @format = Format::Xml.new
+        when "json"
+          @format = Format::Json.new
+        else
+          raise ArgumentError, "Unknown format #{format}"
+      end
     end
 
     # this is used to run the http verbs like http_post, http_put, http_delete etc.

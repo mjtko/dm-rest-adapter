@@ -1,16 +1,17 @@
 module DataMapperRest
-  # Absolutely simple format class, extend later if needed
-  class Format
-    attr_accessor :extension, :mime
+  module Format
+    class AbstractFormat
+  	  attr_accessor :extension, :mime
 
-    def initialize(type)
-      @extension = type
-      @mime      = "application/#{type}"
+      def initialize(options = {})
+        @extension = options.fetch(:extension, default_options[:extension])
+        @extension = nil if extension == "" # consider blank extension as not present
+        @mime = options.fetch(:mime, default_options[:mime])
+      end
+
+      def header
+        { "Content-Type" => @mime }
+      end
     end
-
-    def header
-      { 'Content-Type' => @mime }
-    end
-
   end
 end
