@@ -2,13 +2,15 @@ module DataMapperRest
   # TODO: Abstract XML support out from the protocol
   # TODO: Build JSON support
 
-  # All http_"verb" (http_post) method calls use method missing in connection class which uses run_verb
   class Adapter < DataMapper::Adapters::AbstractAdapter
     def create(resources)
       resources.each do |resource|
         model = resource.model
 
-        response = connection.http_post("#{resource_name(model)}", resource.to_xml)
+        response = @client[@format.resource_path(resource_name(model))].post(
+          resource.to_xml,
+          :content_type => @format.mime
+        )
 
         update_with_response(resource, response)
       end
@@ -18,14 +20,12 @@ module DataMapperRest
       model = query.model
 
       records = if id = extract_id_from_query(query)
-        response = connection.http_get("#{resource_name(model)}/#{id}")
+        response = @client[@format.resource_path(resource_name(model), id)].get
         [ parse_resource(response.body, model) ]
       else
-        query_string = if (params = extract_params_from_query(query)).any?
-          params.map { |k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
-        end
-
-        response = connection.http_get("#{resource_name(model)}#{'?' << query_string if query_string}")
+        response = @client[@format.resource_path(resource_name(model))].get(
+          extract_params_from_query(query)
+        )
         parse_resources(response.body, model)
       end
 
@@ -40,7 +40,10 @@ module DataMapperRest
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
-        response = connection.http_put("#{resource_name(model)}/#{id}", resource.to_xml)
+        response = @client[@format.resource_path(resource_name(model), id)].put(
+          resource.to_xml,
+          :content_type => @format.mime
+        )
 
         update_with_response(resource, response)
       end.size
@@ -51,9 +54,10 @@ module DataMapperRest
         model = resource.model
         key   = model.key
         id    = key.get(resource).join
+        
+        response = @client[@format.resource_path(resource_name(model), id)].delete
 
-        response = connection.http_delete("#{resource_name(model)}/#{id}")
-        response.kind_of?(Net::HTTPSuccess)
+        (200..207).include?(response.code)
       end.size
     end
 
@@ -61,11 +65,8 @@ module DataMapperRest
 
     def initialize(*)
       super
-      @format = @options.fetch(:format, 'xml')
-    end
-
-    def connection
-      @connection ||= Connection.new(normalized_uri, @format)
+      @format = Format::Xml.new
+      @client = RestClient::Resource.new(normalized_uri)
     end
 
     def normalized_uri
@@ -75,7 +76,7 @@ module DataMapperRest
           query = nil if query.empty?
 
           Addressable::URI.new(
-            :scheme       => 'http',
+            :scheme       => "http",
             :user         => @options[:user],
             :password     => @options[:password],
             :host         => @options[:host],
@@ -153,7 +154,7 @@ module DataMapperRest
     end
 
     def update_with_response(resource, response)
-      return unless response.kind_of?(Net::HTTPSuccess) && !DataMapper::Ext.blank?(response.body)
+      return unless (200..207).include?(response.code) && !DataMapper::Ext.blank?(response.body)
 
       model      = resource.model
       properties = model.properties(name)

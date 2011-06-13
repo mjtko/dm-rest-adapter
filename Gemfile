@@ -31,7 +31,8 @@ end
 
 group :datamapper do
 
-  gem 'dm-core', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}"
+  gem 'dm-core',      DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}"
+  gem 'rest-client',  '~> 1.6.3'
 
   plugins = ENV['PLUGINS'] || ENV['PLUGIN']
   plugins = plugins.to_s.tr(',', ' ').split.uniq

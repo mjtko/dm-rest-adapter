@@ -12,6 +12,24 @@ module DataMapperRest
       def header
         { "Content-Type" => @mime }
       end
+
+      def default_options
+        {}
+      end
+
+      def resource_path(name, key = nil)
+        path = if key
+          "#{name}/#{key}"
+        else
+          name
+        end
+        
+        if @extension
+          "#{path}.#{@extension}"
+        else
+          path
+        end
+      end
     end
   end
 end
