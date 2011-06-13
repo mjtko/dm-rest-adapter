@@ -9,40 +9,40 @@ module DataMapperRest
         resource.to_xml
       end
       
-      def update_with_response(adapter, resource, body)
+      def update_with_response(resource, body)
         return if DataMapper::Ext.blank?(body)
 
         model      = resource.model
-        properties = model.properties(adapter.name)
+        properties = model.properties(repository_name)
 
-        parse_resource(adapter, body, model).each do |key, value|
+        parse_resource(body, model).each do |key, value|
           if property = properties[key.to_sym]
             property.set!(resource, value)
           end
         end
       end
       
-      def parse_resources(adapter, xml, model)
+      def parse_resources(xml, model)
         doc = REXML::Document::new(xml)
 
-        field_to_property = Hash[ model.properties(adapter.name).map { |p| [ p.field, p ] } ]
-        element_name      = element_name(adapter, model)
+        field_to_property = Hash[ model.properties(repository_name).map { |p| [ p.field, p ] } ]
+        element_name      = element_name(model)
 
-        doc.elements.collect("/#{resource_name(adapter, model)}/#{element_name}") do |entity_element|
+        doc.elements.collect("/#{resource_name(model)}/#{element_name}") do |entity_element|
           record_from_rexml(entity_element, field_to_property)
         end
       end
       
-      def parse_resource(adapter, xml, model)
+      def parse_resource(xml, model)
         doc = REXML::Document::new(xml)
 
-        element_name = element_name(adapter, model)
+        element_name = element_name(model)
 
         unless entity_element = REXML::XPath.first(doc, "/#{element_name}")
           raise "No root element matching #{element_name} in xml"
         end
 
-        field_to_property = Hash[ model.properties(adapter.name).map { |p| [ p.field, p ] } ]
+        field_to_property = Hash[ model.properties(repository_name).map { |p| [ p.field, p ] } ]
         record_from_rexml(entity_element, field_to_property)
       end
 
@@ -61,8 +61,8 @@ module DataMapperRest
         record
       end
 
-      def element_name(adapter, model)
-        DataMapper::Inflector.singularize(model.storage_name(adapter.name))
+      def element_name(model)
+        DataMapper::Inflector.singularize(model.storage_name(repository_name))
       end
     end
   end

@@ -6,12 +6,12 @@ module DataMapperRest
       resources.each do |resource|
         model = resource.model
 
-        response = @client[@format.resource_path(self, model)].post(
+        response = @client[@format.resource_path(model)].post(
           @format.format_as_string(resource),
           :content_type => @format.mime
         )
 
-        @format.update_with_response(self, resource, response.body)
+        @format.update_with_response(resource, response.body)
       end
     end
 
@@ -19,13 +19,13 @@ module DataMapperRest
       model = query.model
 
       records = if id = extract_id_from_query(query)
-        response = @client[@format.resource_path(self, model, id)].get
-        [ @format.parse_resource(self, response.body, model) ]
+        response = @client[@format.resource_path(model, id)].get
+        [ @format.parse_resource(response.body, model) ]
       else
-        response = @client[@format.resource_path(self, model)].get(
+        response = @client[@format.resource_path(model)].get(
           extract_params_from_query(query)
         )
-        @format.parse_resources(self, response.body, model)
+        @format.parse_resources(response.body, model)
       end
 
       query.filter_records(records)
@@ -39,12 +39,12 @@ module DataMapperRest
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
-        response = @client[@format.resource_path(self, model, id)].put(
+        response = @client[@format.resource_path(model, id)].put(
           @format.format_as_string(resource),
           :content_type => @format.mime
         )
 
-        @format.update_with_response(self, resource, response.body)
+        @format.update_with_response(resource, response.body)
       end.size
     end
 
@@ -54,7 +54,7 @@ module DataMapperRest
         key   = model.key
         id    = key.get(resource).join
         
-        response = @client[@format.resource_path(self, model, id)].delete
+        response = @client[@format.resource_path(model, id)].delete
 
         (200..207).include?(response.code)
       end.size
@@ -65,7 +65,7 @@ module DataMapperRest
     def initialize(*)
       super
       # FIXME: Instantiate the correct Format
-      @format = Format::Xml.new
+      @format = Format::Xml.new(@options.merge(:repository_name => name))
       @client = RestClient::Resource.new(normalized_uri)
     end
 
