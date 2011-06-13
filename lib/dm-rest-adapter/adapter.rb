@@ -7,7 +7,7 @@ module DataMapperRest
         model = resource.model
 
         response = @client[@format.resource_path(self, model)].post(
-          @format.formatted(resource),
+          @format.format_as_string(resource),
           :content_type => @format.mime
         )
 
@@ -40,7 +40,7 @@ module DataMapperRest
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
         response = @client[@format.resource_path(self, model, id)].put(
-          @format.formatted(resource),
+          @format.format_as_string(resource),
           :content_type => @format.mime
         )
 
@@ -64,6 +64,7 @@ module DataMapperRest
 
     def initialize(*)
       super
+      # FIXME: Instantiate the correct Format
       @format = Format::Xml.new
       @client = RestClient::Resource.new(normalized_uri)
     end
