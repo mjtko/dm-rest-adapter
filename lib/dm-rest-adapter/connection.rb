@@ -14,7 +14,7 @@ module DataMapperRest
         when "json"
           @format = Format::Json.new
         else
-          raise ArgumentError, "Unknown format #{format}"
+          raise ArgumentError, "Unknown format: #{format}"
       end
     end
 
