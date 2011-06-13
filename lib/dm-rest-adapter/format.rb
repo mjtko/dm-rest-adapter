@@ -4,9 +4,10 @@ module DataMapperRest
   	  attr_accessor :extension, :mime, :repository_name
 
       def initialize(options = {})
-        @extension = options.fetch(:extension, default_options[:extension])
+        options = default_options.merge(options)
+        @extension = options[:extension]
         @extension = nil if extension == "" # consider blank extension as not present
-        @mime = options.fetch(:mime, default_options[:mime])
+        @mime = options[:mime]
         @repository_name = options.fetch(:repository_name, :default)
       end
 
