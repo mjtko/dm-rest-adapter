@@ -8,6 +8,7 @@ DATAMAPPER   = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'http://git
 DM_VERSION   = '~> 1.1.0'
 
 gem 'dm-serializer', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-serializer#{REPO_POSTFIX}"
+gem 'rest-client',  '~> 1.6.3'
 
 group :development do
 
@@ -32,7 +33,6 @@ end
 group :datamapper do
 
   gem 'dm-core',      DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}"
-  gem 'rest-client',  '~> 1.6.3'
 
   plugins = ENV['PLUGINS'] || ENV['PLUGIN']
   plugins = plugins.to_s.tr(',', ' ').split.uniq
