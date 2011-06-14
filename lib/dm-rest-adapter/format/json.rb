@@ -2,7 +2,7 @@ module DataMapperRest
   module Format
     class Json < AbstractFormat
       def default_options
-        { :mime => "application/json", :extension => "json" }
+        DataMapper::Mash.new({ :mime => "application/json", :extension => "json" })
       end
       
       def string_representation(resource)

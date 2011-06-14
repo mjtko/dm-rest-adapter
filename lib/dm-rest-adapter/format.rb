@@ -6,7 +6,7 @@ module DataMapperRest
       def initialize(options = {})
         options = default_options.merge(options)
         @extension = options[:extension]
-        @extension = nil if extension == "" # consider blank extension as not present
+        @extension = nil if @extension == "" # consider blank extension as not present
         @mime = options[:mime]
         @repository_name = options.fetch(:repository_name, :default)
       end
@@ -16,7 +16,7 @@ module DataMapperRest
       end
 
       def default_options
-        {}
+        DataMapper::Mash.new
       end
 
       def resource_name(model)

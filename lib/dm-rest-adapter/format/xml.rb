@@ -2,7 +2,7 @@ module DataMapperRest
   module Format
     class Xml < AbstractFormat
       def default_options
-        { :mime => "application/xml", :extension => "xml" }
+        DataMapper::Mash.new({ :mime => "application/xml", :extension => "xml" })
       end
       
       def string_representation(resource)
