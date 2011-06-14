@@ -35,19 +35,19 @@ module DataMapperRest
           "#{self.class}#string_representation not implemented"
       end
       
-      def update_with_response(resource, body)
+      def update_attributes(resource, body)
         raise NotImplementedError,
-          "#{self.class}#update_with_response not implemented"
+          "#{self.class}#update_attributes not implemented"
       end
       
-      def parse_resources(body, model)
+      def parse_collection(body, model)
         raise NotImplementedError,
-          "#{self.class}#parse_resources not implemented"
+          "#{self.class}#parse_collection not implemented"
       end
       
-      def parse_resource(body, model)
+      def parse_record(body, model)
         raise NotImplementedError,
-          "#{self.class}#parse_resource not implemented"
+          "#{self.class}#parse_record not implemented"
       end
     end
   end

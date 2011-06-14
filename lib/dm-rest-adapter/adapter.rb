@@ -11,7 +11,7 @@ module DataMapperRest
           :content_type => @format.mime
         )
 
-        @format.update_with_response(resource, response.body)
+        @format.update_attributes(resource, response.body)
       end
     end
 
@@ -20,12 +20,12 @@ module DataMapperRest
 
       records = if id = extract_id_from_query(query)
         response = @client[@format.resource_path(model, id)].get
-        [ @format.parse_resource(response.body, model) ]
+        [ @format.parse_record(response.body, model) ]
       else
         response = @client[@format.resource_path(model)].get(
           extract_params_from_query(query)
         )
-        @format.parse_resources(response.body, model)
+        @format.parse_collection(response.body, model)
       end
 
       query.filter_records(records)
@@ -44,7 +44,7 @@ module DataMapperRest
           :content_type => @format.mime
         )
 
-        @format.update_with_response(resource, response.body)
+        @format.update_attributes(resource, response.body)
       end.size
     end
 

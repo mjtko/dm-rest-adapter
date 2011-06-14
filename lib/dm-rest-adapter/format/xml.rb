@@ -9,20 +9,20 @@ module DataMapperRest
         resource.to_xml
       end
       
-      def update_with_response(resource, body)
+      def update_attributes(resource, body)
         return if DataMapper::Ext.blank?(body)
 
         model      = resource.model
         properties = model.properties(repository_name)
 
-        parse_resource(body, model).each do |key, value|
+        parse_record(body, model).each do |key, value|
           if property = properties[key.to_sym]
             property.set!(resource, value)
           end
         end
       end
       
-      def parse_resources(xml, model)
+      def parse_collection(xml, model)
         doc = REXML::Document::new(xml)
 
         field_to_property = Hash[ model.properties(repository_name).map { |p| [ p.field, p ] } ]
@@ -33,7 +33,7 @@ module DataMapperRest
         end
       end
       
-      def parse_resource(xml, model)
+      def parse_record(xml, model)
         doc = REXML::Document::new(xml)
 
         element_name = element_name(model)
