@@ -10,7 +10,14 @@ require 'dm-rest-adapter'
 
 ROOT = Pathname(__FILE__).dirname.parent
 
-DataMapper.setup(:default, 'rest://admin:secret@localhost:4000/?format=xml')
+DataMapper.setup(:default, {
+  :adapter => :rest,
+  :host => "localhost",
+  :port => 4000,
+  :user => "admin",
+  :password => "secret",
+  :format => "xml"
+})
 
 Pathname.glob((ROOT + 'spec/fixtures/**/*.rb').to_s).each { |file| require file }
 

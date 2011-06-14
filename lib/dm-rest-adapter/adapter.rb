@@ -1,5 +1,12 @@
 module DataMapperRest
-  # TODO: Build JSON support
+  # TODO: Raise the appropriate Exceptions on read errors
+  #       Follow redirects to newly created resources (existing bug)
+  #       Specs for parse errors (existing bug)
+  #       Allow HTTP scheme to be specified in options (i.e. allow HTTPS) (existing bug)
+  #       Allow nested resources (existing bug)
+  #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
+  #       Specs for associations (existing bug)
+  #       Rewrite rest_adapter_spec.rb to use a test-specific adapter (avoid test duplication)
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
     def create(resources)
@@ -64,8 +71,17 @@ module DataMapperRest
 
     def initialize(*)
       super
-      # FIXME: Instantiate the correct Format
-      @format = Format::Xml.new(@options.merge(:repository_name => name))
+      case @options[:format]
+        when "xml"
+          format_class = Format::Xml
+        when "json"
+          format_class = Format::Json
+        when Format::AbstractFormat
+          format_class = @options[:format]
+        else
+          raise ArgumentError, "Unknown format: #{@options[:format]}"
+      end
+      @format = format_class.new(@options.merge(:repository_name => name))
       @client = RestClient::Resource.new(normalized_uri)
     end
 

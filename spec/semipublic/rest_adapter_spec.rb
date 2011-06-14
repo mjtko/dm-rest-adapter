@@ -14,7 +14,7 @@ describe DataMapper::Adapters::RestAdapter do
       before :all do
         body = DataMapper::Ext::String.compress_lines(<<-XML)
           <book>
-            <id type='datamapper::types::serial'>1</id>
+            <id type='integer'>1</id>
             <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
             <title>DataMapper</title>
             <author>Dan Kubb</author>
@@ -49,7 +49,7 @@ describe DataMapper::Adapters::RestAdapter do
         body = DataMapper::Ext::String.compress_lines(<<-XML)
           <books>
             <book>
-              <id type='datamapper::types::serial'>1</id>
+              <id type='integer'>1</id>
               <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
               <title>DataMapper</title>
               <author>Dan Kubb</author>
@@ -84,7 +84,7 @@ describe DataMapper::Adapters::RestAdapter do
 
         body = DataMapper::Ext::String.compress_lines(<<-XML)
           <book>
-            <id type='datamapper::types::serial'>1</id>
+            <id type='integer'>1</id>
             <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
             <title>DataMapper</title>
             <author>Dan Kubb</author>
@@ -108,7 +108,7 @@ describe DataMapper::Adapters::RestAdapter do
         body = DataMapper::Ext::String.compress_lines(<<-XML)
           <books>
             <book>
-              <id type='datamapper::types::serial'>1</id>
+              <id type='integer'>1</id>
               <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
               <title>DataMapper</title>
               <author>Dan Kubb</author>
@@ -116,7 +116,7 @@ describe DataMapper::Adapters::RestAdapter do
 
             <!-- provide an extra resource, which should be filtered out -->
             <book>
-              <id type='datamapper::types::serial'>2</id>
+              <id type='integer'>2</id>
               <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
               <title>DataMapper</title>
               <author>John Doe</author>
@@ -145,7 +145,7 @@ describe DataMapper::Adapters::RestAdapter do
         body = DataMapper::Ext::String.compress_lines(<<-XML)
           <books>
             <book>
-              <id type='datamapper::types::serial'>1</id>
+              <id type='integer'>1</id>
               <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
               <title>DataMapper</title>
               <author>Dan Kubb</author>
@@ -175,7 +175,7 @@ describe DataMapper::Adapters::RestAdapter do
       body = DataMapper::Ext::String.compress_lines(<<-XML)
         <books>
           <book>
-            <id type='datamapper::types::serial'>1</id>
+            <id type='integer'>1</id>
             <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
             <title>DataMapper</title>
             <author>Dan Kubb</author>
@@ -191,7 +191,7 @@ describe DataMapper::Adapters::RestAdapter do
     before :all do
       body = DataMapper::Ext::String.compress_lines(<<-XML)
         <book>
-          <id type='datamapper::types::serial'>1</id>
+          <id type='integer'>1</id>
           <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
           <title>DataMapper</title>
           <author>John Doe</author>
@@ -223,7 +223,7 @@ describe DataMapper::Adapters::RestAdapter do
       body = DataMapper::Ext::String.compress_lines(<<-XML)
         <books>
           <book>
-            <id type='datamapper::types::serial'>1</id>
+            <id type='integer'>1</id>
             <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
             <title>DataMapper</title>
             <author>Dan Kubb</author>
