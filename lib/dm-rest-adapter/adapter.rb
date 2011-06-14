@@ -31,7 +31,7 @@ module DataMapperRest
         [ @format.parse_record(response.body, model) ]
       else
         response = @client[@format.resource_path(model)].get(
-          extract_params_from_query(query)
+          :params => extract_params_from_query(query)
         )
         @format.parse_collection(response.body, model)
       end
