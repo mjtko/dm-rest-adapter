@@ -13,7 +13,6 @@ gem 'rest-client',  '~> 1.6.3'
 group :development do
 
   gem 'dm-validations', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}"
-  gem 'fakeweb',        '~> 1.3'
   gem 'jeweler',        '~> 1.5.2'
   gem 'rake',           '~> 0.8.7'
   gem 'rspec',          '~> 2.6'

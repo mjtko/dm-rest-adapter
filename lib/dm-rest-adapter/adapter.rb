@@ -1,6 +1,5 @@
 module DataMapperRest
-  # TODO: Raise the appropriate Exceptions on read errors
-  #       Follow redirects to newly created resources (existing bug)
+  # TODO: Follow redirects to newly created resources (existing bug)
   #       Specs for parse errors (existing bug)
   #       Allow HTTP scheme to be specified in options (i.e. allow HTTPS) (existing bug)
   #       Allow nested resources (existing bug)
@@ -10,11 +9,13 @@ module DataMapperRest
   #       Specify Accept: header in the request, to allow content-type negotiation on the server.
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
+    attr_accessor :rest_client
+    
     def create(resources)
       resources.each do |resource|
         model = resource.model
 
-        response = @client[@format.resource_path(model)].post(
+        response = @rest_client[@format.resource_path(model)].post(
           @format.string_representation(resource),
           :content_type => @format.mime
         )
@@ -27,10 +28,14 @@ module DataMapperRest
       model = query.model
 
       records = if id = extract_id_from_query(query)
-        response = @client[@format.resource_path(model, id)].get
-        [ @format.parse_record(response.body, model) ]
+        begin
+          response = @rest_client[@format.resource_path(model, id)].get
+          [ @format.parse_record(response.body, model) ]
+        rescue RestClient::ResourceNotFound
+          []
+        end
       else
-        response = @client[@format.resource_path(model)].get(
+        response = @rest_client[@format.resource_path(model)].get(
           :params => extract_params_from_query(query)
         )
         @format.parse_collection(response.body, model)
@@ -47,7 +52,7 @@ module DataMapperRest
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
-        response = @client[@format.resource_path(model, id)].put(
+        response = @rest_client[@format.resource_path(model, id)].put(
           @format.string_representation(resource),
           :content_type => @format.mime
         )
@@ -62,7 +67,7 @@ module DataMapperRest
         key   = model.key
         id    = key.get(resource).join
         
-        response = @client[@format.resource_path(model, id)].delete
+        response = @rest_client[@format.resource_path(model, id)].delete
 
         (200..207).include?(response.code)
       end.size
@@ -72,18 +77,19 @@ module DataMapperRest
 
     def initialize(*)
       super
+      
+      raise ArgumentError, "Missing :format in @options" unless @options[:format]
+      
       case @options[:format]
         when "xml"
-          format_class = Format::Xml
+          @format = Format::Xml.new(@options.merge(:repository_name => name))
         when "json"
-          format_class = Format::Json
-        when Format::AbstractFormat
-          format_class = @options[:format]
+          @format = Format::Json.new(@options.merge(:repository_name => name))
         else
-          raise ArgumentError, "Unknown format: #{@options[:format]}"
+          @format = @options[:format]
       end
-      @format = format_class.new(@options.merge(:repository_name => name))
-      @client = RestClient::Resource.new(normalized_uri)
+      
+      @rest_client = RestClient::Resource.new(normalized_uri)
     end
 
     def normalized_uri
