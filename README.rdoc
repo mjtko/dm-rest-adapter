@@ -4,13 +4,27 @@ A DataMapper adapter for REST Web Services
 
 == Usage
 
-DM Rest Adapter requires the use of a model which is the same name
-as the resource you are using. For example, if you have a resource
-named "posts" you will create a standard datamapper object called
-post.rb in app/models. The only difference in this model is you will
-need to define the rest adapter for the model.
+DM Rest Adapter provides a way to fetch and update resources from the
+web using the same DataMapper Resource classes you use when working
+with a database, or another repository backend.  The only difference
+is that you will use the Rest Adapter on your REST Resources.
 
-The following is an example of a post model, where the host settings
+The currently supported web formats are XML and JSON.
+
+For example, using the default configuration, a resource at
+"/posts/1.xml" can be fetched simply by using:
+
+ post = Post.get(1) # => GET /posts/1.xml
+ post.title         # => "A RESTful resource"
+ 
+ post.title = "A new title"
+ post.save          # => PUT /posts/1.xml
+ 
+If the resource does not exist, nil is returned, or
+DataMapper::ObjectNotFoundError is raised if #get! was used to fetch
+the Resource.
+
+The following is an example of a Post model, where the host settings
 point to the app you are running the resource on. In addition I have
 included a basic auth login which will be used if your resource
 requires auth:
@@ -28,7 +42,7 @@ requires auth:
 
    include DataMapper::Resource
 
-   property :id, Serial
+   property :id,    Serial
    property :title, String
    property :body,  Text
 
@@ -42,7 +56,8 @@ or posted from/to the resource.
 == Code
 
 Now for some code examples. DM Rest Adapter uses the same
-methods as datamapper including during creation.
+methods as datamapper including during creation.  You can still add
+validations and all the usual niceties to your models.
 
  Post.first
  # => returns the object from the resouce
@@ -52,11 +67,111 @@ methods as datamapper including during creation.
  p.save
  # => saves the resource on the remote
 
-== Caveat
+== Additional Configuration
 
-Posts do not honor RESTful HTTP status codes. I might fix this...
+You can specify a non-standard extension (i.e. something other than ".json" or ".xml") by
+passing the :extension option when setting up the connection.
+
+ DataMapper.setup(:default, {
+   :adapter   => 'rest',
+   :format    => 'xml',
+   :extension => 'anything',
+   ...
+ })
+
+If your URLs have no extension on them, pass an empty string, or nil.
+
+If your Resources map to a different path to the name of the model itself, you can
+specify the path fragment with #storage_names as with other adapters:
+
+ class Post
+   include DataMapper::Resource
+   
+   storage_names[:default] = 'blog-posts'
+   
+   ...
+ end
+
+ Post.get(1)  #=> GET /blog-posts/1.json
+ 
+Likewise, if the fields in the XML/JSON are not the same as the attributes in your
+model, you can specify them with the :field option on your properties:
+
+ class Post
+   include DataMapper::Resource
+   
+   property :id,  Serial,  :field => 'post_id'
+ end
+
+== Exercise Caution
+
+RESTful web services, while convenient, are not known for being fast to query.  For example,
+  
+ Post.first
+
+actually fetches all Posts and then returns the first of the collection.  There is not much
+that can be done about this and it just comes down to using the right tool for the job.
+
+== Expected Formats for Legacy Applications
+
+Work is scheduled to overcome this current limitation.  The currently expected formats are:
+
+=== XML
+
+For a collection of Posts, the XML must adhere to a format like this:
+
+ <posts>
+   <post>
+     <id type="integer">1</id>
+     <created_at type="datetime">2011-06-16T02:38:42-07:00</created_at>
+     <title>An awesome blog post</title>
+   </post>
+   <post>
+     <id type="integer">2</id>
+     ....
+ </posts>
+ 
+For a single Post:
+
+ <post>
+   <id type="integer">1</id>
+   <created_at type="datetime">2011-06-16T02:38:42-07:00</created_at>
+   <title>An awesome blog post</title>
+ </post>
+
+The type attributes are ignored by DM Rest Adapter and typecasting is done by the
+properties on the model as usual, so the values are somewhat flexible.
+
+=== JSON
+
+For a collection of Posts, the JSON must adhere to a format like this:
+
+ [
+   {
+     "id" : 1,
+     "created_at" : "2011-06-16T02:38:42-07:00",
+     "title" : "An awesome blog post"
+   },
+   {
+     "id" : 2,
+     ...
+   }
+ ]
+ 
+For a single Post:
+
+ {
+   "id" : 1,
+   "created_at" : "2011-06-16T02:38:42-07:00",
+   "title" : "An awesome blog post"
+ }
+
+As with the XML format, the values themselves will be type-cast by the properties on
+your model.
 
 == TODO:
 
-Nested resources
-Put verb actions
+Nested resources.
+Better support for associations.
+More flexible formatting conventions.
+Request Logging.
