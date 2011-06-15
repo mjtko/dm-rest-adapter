@@ -1,6 +1,5 @@
 module DataMapperRest
-  # TODO: Raise the appropriate Exceptions on read errors
-  #       Follow redirects to newly created resources (existing bug)
+  # TODO: Follow redirects to newly created resources (existing bug)
   #       Specs for parse errors (existing bug)
   #       Allow HTTP scheme to be specified in options (i.e. allow HTTPS) (existing bug)
   #       Allow nested resources (existing bug)
