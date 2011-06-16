@@ -41,4 +41,12 @@ shared_examples_for 'a Format' do
       subject.resource_path(Book).should == "books"
     end
   end
+  
+  context "with a non-standard storage name" do
+    subject { described_class.new }
+    
+    it "uses the the specified storage name" do
+      subject.resource_path(DifficultBook).should == "books.#{default_extension}"
+    end
+  end
 end
