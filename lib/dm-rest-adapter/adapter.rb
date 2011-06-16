@@ -5,7 +5,6 @@ module DataMapperRest
   #       Allow nested resources (existing bug)
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
   #       Specs for associations (existing bug)
-  #       Specify Accept: header in the request, to allow content-type negotiation on the server.
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
     attr_accessor :rest_client
@@ -16,7 +15,7 @@ module DataMapperRest
 
         response = @rest_client[@format.resource_path(model)].post(
           @format.string_representation(resource),
-          :content_type => @format.mime
+          :content_type => @format.mime, :accept => @format.mime
         )
 
         @format.update_attributes(resource, response.body)
@@ -28,14 +27,22 @@ module DataMapperRest
 
       records = if id = extract_id_from_query(query)
         begin
-          response = @rest_client[@format.resource_path(model, id)].get
+          response = @rest_client[@format.resource_path(model, id)].get(
+            :accept => @format.mime
+          )
           [ @format.parse_record(response.body, model) ]
         rescue RestClient::ResourceNotFound
           []
         end
       else
+        query_options = {
+          :params => extract_params_from_query(query),
+          :accept => @format.mime
+        }
+        query_options.delete(:params) if query_options[:params].empty?
+        
         response = @rest_client[@format.resource_path(model)].get(
-          :params => extract_params_from_query(query)
+          query_options
         )
         @format.parse_collection(response.body, model)
       end
@@ -53,7 +60,7 @@ module DataMapperRest
 
         response = @rest_client[@format.resource_path(model, id)].put(
           @format.string_representation(resource),
-          :content_type => @format.mime
+          :content_type => @format.mime, :accept => @format.mime
         )
 
         @format.update_attributes(resource, response.body)
@@ -66,7 +73,9 @@ module DataMapperRest
         key   = model.key
         id    = key.get(resource).join
         
-        response = @rest_client[@format.resource_path(model, id)].delete
+        response = @rest_client[@format.resource_path(model, id)].delete(
+          :accept => @format.mime
+        )
 
         (200..207).include?(response.code)
       end.size

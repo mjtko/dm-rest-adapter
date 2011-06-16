@@ -64,7 +64,10 @@ describe DataMapper::Adapters::RestAdapter do
       
       it "should POST the serialized Resource to the resource path" do
         @format.stub(:string_representation) { "<<a useless format>>" }
-        @adapter.rest_client.should_receive(:post).with("<<a useless format>>", { :content_type => "application/mock" }).and_return(@response)
+        @adapter.rest_client.should_receive(:post).with(
+          "<<a useless format>>",
+          { :content_type => "application/mock", :accept => "application/mock" }
+        ).and_return(@response)
         stub_mocks!
         @adapter.create(@resources)
       end
@@ -104,7 +107,9 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should use GET" do
-        @adapter.rest_client.should_receive(:get) { @response }
+        @adapter.rest_client.should_receive(:get).with(
+          { :accept => "application/mock" }
+        ).and_return(@response)
         stub_mocks!
         @adapter.read(@query)
       end
@@ -143,7 +148,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should use GET" do
-        @adapter.rest_client.should_receive(:get) { @response }
+        @adapter.rest_client.should_receive(:get).with({ :accept => "application/mock" }).and_return(@response)
         stub_mocks!
         @adapter.read(@query)
       end
@@ -188,7 +193,9 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should use GET with the conditions appended as params" do
-        @adapter.rest_client.should_receive(:get).with(:params => { :author => "Dan Kubb" }).and_return(@response)
+        @adapter.rest_client.should_receive(:get).with(
+          { :params => { :author => "Dan Kubb" }, :accept => "application/mock" }
+        ).and_return(@response)
         stub_mocks!
         @adapter.read(@query)
       end
@@ -234,7 +241,10 @@ describe DataMapper::Adapters::RestAdapter do
     
     it "should PUT the serialized Resource to the path" do
       @format.stub(:string_representation) { "<<a useless format>>" }
-      @adapter.rest_client.should_receive(:put).with("<<a useless format>>", { :content_type => "application/mock" }).and_return(@response)
+      @adapter.rest_client.should_receive(:put).with(
+        "<<a useless format>>",
+        { :content_type => "application/mock", :accept => "application/mock" }
+      ).and_return(@response)
       stub_mocks!
       @adapter.update({ Book.properties[:author] => "John Doe" }, @resources)
     end
@@ -283,7 +293,7 @@ describe DataMapper::Adapters::RestAdapter do
     end
     
     it "should DELETE the resource from the path" do
-      @adapter.rest_client.should_receive(:delete).and_return(@response)
+      @adapter.rest_client.should_receive(:delete).with({ :accept => "application/mock" }).and_return(@response)
       stub_mocks!
       @adapter.delete(@resources)
     end
