@@ -5,7 +5,6 @@ module DataMapperRest
   #       Allow nested resources (existing bug)
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
   #       Specs for associations (existing bug)
-  #       Rewrite rest_adapter_spec.rb to use a test-specific adapter (avoid test duplication)
   #       Specify Accept: header in the request, to allow content-type negotiation on the server.
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
