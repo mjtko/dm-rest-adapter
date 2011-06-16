@@ -11,10 +11,6 @@ module DataMapperRest
         @repository_name = options.fetch(:repository_name, :default)
       end
 
-      def header
-        { "Content-Type" => @mime }
-      end
-
       def default_options
         DataMapper::Mash.new
       end
