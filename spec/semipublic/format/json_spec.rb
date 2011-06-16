@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 describe DataMapperRest::Format::Json do
-  it_should_behave_like "a Format", "json", "application/json"
+  let(:default_mime) { "application/json" }
+  let(:default_extension) { "json" }
+  
+  it_should_behave_like "a Format"
   
   describe "#string_representation" do
     before(:each) do

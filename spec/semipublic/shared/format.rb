@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-shared_examples_for 'a Format' do |default_extension, default_mime|
+shared_examples_for 'a Format' do
   describe "uncustomized" do
     subject { described_class.new }
 

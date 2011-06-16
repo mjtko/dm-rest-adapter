@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 describe DataMapperRest::Format::Xml do
-  it_should_behave_like "a Format", "xml", "application/xml"
+  let(:default_mime) { "application/xml" }
+  let(:default_extension) { "xml" }
+  
+  it_should_behave_like "a Format"
   
   describe "#string_representation" do
     before(:each) do
