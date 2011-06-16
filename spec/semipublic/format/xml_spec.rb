@@ -1,53 +1,7 @@
 require 'spec_helper'
 
 describe DataMapperRest::Format::Xml do
-  describe "uncustomized" do
-    subject { DataMapperRest::Format::Xml.new }
-
-    its(:mime) { should == "application/xml" }
-    its(:extension) { should == "xml" }
-
-    it "appends the default extension to the resource path" do
-      format = DataMapperRest::Format::Xml.new
-      format.resource_path(Book.new.model).should == "books.xml"
-    end
-  end
-
-  describe "custom extension" do
-    subject { DataMapperRest::Format::Xml.new(:extension => "data") }
-
-    its(:mime) { should == "application/xml" }
-    its(:extension) { should == "data" }
-
-    it "appends the extension to the resource path" do
-      format = DataMapperRest::Format::Xml.new(:extension => "data")
-      format.resource_path(Book.new.model).should == "books.data"
-    end
-  end
-
-  describe "no extension" do
-    subject { DataMapperRest::Format::Xml.new(:extension => nil) }
-
-    its(:mime) { should == "application/xml" }
-    its(:extension) { should be_nil }
-
-    it "does not append an extension to the resource path" do
-      format = DataMapperRest::Format::Xml.new(:extension => nil)
-      format.resource_path(Book.new.model).should == "books"
-    end
-  end
-
-  describe "empty extension" do
-    subject { DataMapperRest::Format::Xml.new(:extension => "") }
-
-    its(:mime) { should == "application/xml" }
-    its(:extension) { should be_nil }
-
-    it "does not append an extension to the resource path" do
-      format = DataMapperRest::Format::Xml.new(:extension => "")
-      format.resource_path(Book.new.model).should == "books"
-    end
-  end
+  it_should_behave_like "a Format", "xml", "application/xml"
   
   describe "#string_representation" do
     before(:each) do

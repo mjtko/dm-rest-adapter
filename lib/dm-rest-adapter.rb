@@ -1,4 +1,5 @@
 require 'rexml/document'
+require 'json'
 
 require 'rest-client'
 
