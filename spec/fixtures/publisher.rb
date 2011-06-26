@@ -5,5 +5,5 @@ class Publisher
   property :created_at, DateTime
   property :name,       String
   
-  has n, :books, 'DifficultBook'
+  has n, :books, 'DifficultBook', :nested => true
 end
