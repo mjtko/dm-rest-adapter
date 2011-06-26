@@ -44,7 +44,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should ask the format for the path to each Model" do
-        @format.should_receive(:resource_path).with(@resource.model)
+        @format.should_receive(:resource_path).with(:model => @resource.model)
         stub_mocks!
         @adapter.create(@resources)
       end
@@ -94,7 +94,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should ask the format for the resource path" do
-        @format.should_receive(:resource_path).with(Book)
+        @format.should_receive(:resource_path).with(:model => Book)
         stub_mocks!
         @adapter.read(@query)
       end
@@ -135,7 +135,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should ask the format for the resource path using the key" do
-        @format.should_receive(:resource_path).with(Book, 1)
+        @format.should_receive(:resource_path).with(:model => Book, :key => 1)
         stub_mocks!
         @adapter.read(@query)
       end
@@ -180,7 +180,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
       
       it "should ask the format for the resource path" do
-        @format.should_receive(:resource_path).with(Book)
+        @format.should_receive(:resource_path).with(:model => Book)
         stub_mocks!
         @adapter.read(@query)
       end
@@ -221,7 +221,7 @@ describe DataMapper::Adapters::RestAdapter do
     end
     
     it "should ask the format for the resource path using the key" do
-      @format.should_receive(:resource_path).with(@resource.model, "1")
+      @format.should_receive(:resource_path).with(:model => @resource.model, :key => "1")
       stub_mocks!
       @adapter.update({ Book.properties[:author] => "John Doe" }, @resources)
     end
@@ -280,7 +280,7 @@ describe DataMapper::Adapters::RestAdapter do
     end
     
     it "should ask the format for the resource path using the key" do
-      @format.should_receive(:resource_path).with(@resource.model, "1")
+      @format.should_receive(:resource_path).with(:model => @resource.model, :key => "1")
       stub_mocks!
       @adapter.delete(@resources)
     end

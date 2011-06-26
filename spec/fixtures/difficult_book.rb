@@ -7,4 +7,6 @@ class DifficultBook
   property :created_at, DateTime
   property :title,      String
   property :author,     String
+  
+  belongs_to :publisher
 end

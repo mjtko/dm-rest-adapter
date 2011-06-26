@@ -8,7 +8,7 @@ shared_examples_for 'a Format' do
     its(:extension) { should == default_extension }
 
     it "appends the default extension to the resource path" do
-      subject.resource_path(Book).should == "books.#{default_extension}"
+      subject.resource_path(:model => Book).should == "books.#{default_extension}"
     end
   end
 
@@ -18,7 +18,7 @@ shared_examples_for 'a Format' do
     its(:extension) { should == "data" }
 
     it "appends the extension to the resource path" do
-      subject.resource_path(Book).should == "books.data"
+      subject.resource_path(:model => Book).should == "books.data"
     end
   end
 
@@ -28,7 +28,7 @@ shared_examples_for 'a Format' do
     its(:extension) { should be_nil }
 
     it "does not append an extension to the resource path" do
-      subject.resource_path(Book).should == "books"
+      subject.resource_path(:model => Book).should == "books"
     end
   end
 
@@ -38,7 +38,7 @@ shared_examples_for 'a Format' do
     its(:extension) { should be_nil }
 
     it "does not append an extension to the resource path" do
-      subject.resource_path(Book).should == "books"
+      subject.resource_path(:model => Book).should == "books"
     end
   end
   
@@ -46,7 +46,7 @@ shared_examples_for 'a Format' do
     subject { described_class.new }
     
     it "uses the the specified storage name" do
-      subject.resource_path(DifficultBook).should == "books.#{default_extension}"
+      subject.resource_path(:model => DifficultBook).should == "books.#{default_extension}"
     end
   end
 end

@@ -19,11 +19,20 @@ module DataMapperRest
         model.storage_name(repository_name)
       end
 
-      def resource_path(model, key = nil)
-        path = "#{resource_name(model)}"
-        path << "/#{key}"       if key
-        path << ".#{extension}" if extension
-        path
+      def resource_path(*path_fragments)
+        path = path_fragments.reduce("") do |memo, fragment|
+          model = fragment[:model]
+          key   = fragment[:key]
+          memo << "#{resource_name(model)}/"
+          memo << "#{key}/" if key
+          memo
+        end.chomp("/")
+        
+        if extension
+          path + ".#{extension}"
+        else
+          path
+        end
       end
       
       def string_representation(resource)

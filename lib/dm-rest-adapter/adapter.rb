@@ -13,7 +13,7 @@ module DataMapperRest
       resources.each do |resource|
         model = resource.model
 
-        response = @rest_client[@format.resource_path(model)].post(
+        response = @rest_client[@format.resource_path(:model => model)].post(
           @format.string_representation(resource),
           :content_type => @format.mime, :accept => @format.mime
         )
@@ -27,7 +27,7 @@ module DataMapperRest
 
       records = if id = extract_id_from_query(query)
         begin
-          response = @rest_client[@format.resource_path(model, id)].get(
+          response = @rest_client[@format.resource_path(:model => model, :key => id)].get(
             :accept => @format.mime
           )
           [ @format.parse_record(response.body, model) ]
@@ -41,7 +41,7 @@ module DataMapperRest
         }
         query_options.delete(:params) if query_options[:params].empty?
         
-        response = @rest_client[@format.resource_path(model)].get(
+        response = @rest_client[@format.resource_path(:model => model)].get(
           query_options
         )
         @format.parse_collection(response.body, model)
@@ -58,7 +58,7 @@ module DataMapperRest
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
-        response = @rest_client[@format.resource_path(model, id)].put(
+        response = @rest_client[@format.resource_path(:model => model, :key => id)].put(
           @format.string_representation(resource),
           :content_type => @format.mime, :accept => @format.mime
         )
@@ -73,7 +73,7 @@ module DataMapperRest
         key   = model.key
         id    = key.get(resource).join
         
-        response = @rest_client[@format.resource_path(model, id)].delete(
+        response = @rest_client[@format.resource_path(:model => model, :key => id)].delete(
           :accept => @format.mime
         )
 
