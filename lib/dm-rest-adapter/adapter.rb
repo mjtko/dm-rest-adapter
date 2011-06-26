@@ -144,7 +144,7 @@ module DataMapperRest
         if operand.kind_of?(DataMapper::Query::Conditions::EqualToComparison)
           if operand.relationship? && !operand.subject.target_model.eql?(model)
             relationship = operand.subject
-            if relationship.options[:nested]
+            if relationship.inverse.options[:nested]
               {
                 :model => relationship.target_model,
                 :key => relationship.target_key.get(operand.value).join
