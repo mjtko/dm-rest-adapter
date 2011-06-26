@@ -11,6 +11,16 @@ shared_examples_for 'a Format' do
       subject.resource_path(:model => Book).should == "books.#{default_extension}"
     end
   end
+  
+  context "with a key" do
+    subject { described_class.new }
+    
+    it "appends the key to the path" do
+      subject.resource_path(
+        :model => Book, :key => 1
+      ).should == "books/1.#{default_extension}"
+    end
+  end
 
   describe "custom extension" do
     subject { described_class.new(:extension => "data") }
@@ -46,7 +56,27 @@ shared_examples_for 'a Format' do
     subject { described_class.new }
     
     it "uses the the specified storage name" do
-      subject.resource_path(:model => DifficultBook).should == "books.#{default_extension}"
+      subject.resource_path(
+        :model => DifficultBook
+      ).should == "books.#{default_extension}"
+    end
+  end
+  
+  describe "nested resources" do
+    subject { described_class.new }
+    
+    it "constructs paths to nested resource collections" do
+      subject.resource_path(
+        { :model => Publisher, :key => 1 },
+        { :model => Book }
+      ).should == "publishers/1/books.#{default_extension}"
+    end
+    
+    it "constructs paths to singular nested resources" do
+      subject.resource_path(
+        { :model => Publisher, :key => 1 },
+        { :model => Book, :key => 2 }
+      ).should == "publishers/1/books/2.#{default_extension}"
     end
   end
 end
