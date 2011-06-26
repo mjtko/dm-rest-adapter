@@ -25,9 +25,12 @@ module DataMapperRest
     def read(query)
       model = query.model
 
+      path_items = extract_parent_items_from_query(query)
+      
       records = if id = extract_id_from_query(query)
         begin
-          response = @rest_client[@format.resource_path(:model => model, :key => id)].get(
+          path_items << { :model => model, :key => id }
+          response = @rest_client[@format.resource_path(*path_items)].get(
             :accept => @format.mime
           )
           [ @format.parse_record(response.body, model) ]
@@ -35,13 +38,14 @@ module DataMapperRest
           []
         end
       else
+        path_items << { :model => model }
         query_options = {
           :params => extract_params_from_query(query),
           :accept => @format.mime
         }
         query_options.delete(:params) if query_options[:params].empty?
         
-        response = @rest_client[@format.resource_path(:model => model)].get(
+        response = @rest_client[@format.resource_path(*path_items)].get(
           query_options
         )
         @format.parse_collection(response.body, model)
@@ -128,6 +132,27 @@ module DataMapperRest
       return nil unless (key_condition = conditions.select { |o| o.subject.key? }).size == 1
 
       key_condition.first.value
+    end
+    
+    def extract_parent_items_from_query(query)
+      model = query.model
+      conditions = query.conditions
+      
+      return [] unless conditions.kind_of?(DataMapper::Query::Conditions::AndOperation)
+      
+      conditions.collect do |operand|
+        if operand.kind_of?(DataMapper::Query::Conditions::EqualToComparison)
+          if operand.relationship? && !operand.subject.target_model.eql?(model)
+            relationship = operand.subject
+            if relationship.options[:nested]
+              {
+                :model => relationship.target_model,
+                :key => relationship.target_key.get(operand.value).join
+              }.reject { |key, value| DataMapper::Ext.blank?(value) }
+            end
+          end
+        end
+      end.compact
     end
 
     def extract_params_from_query(query)

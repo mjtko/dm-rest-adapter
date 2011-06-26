@@ -15,3 +15,4 @@ require 'dm-rest-adapter/format/json'
 require 'dm-rest-adapter/exceptions'
 
 DataMapper::Adapters::RestAdapter = DataMapperRest::Adapter
+DataMapper::Associations::Relationship::OPTIONS << :nested

@@ -304,6 +304,25 @@ describe DataMapper::Adapters::RestAdapter do
     end
   end
   
+  describe "nested resources" do
+    before(:each) do
+      @publisher  = Publisher.new(
+        :id => 1,
+        :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
+        :name => "Dan's Kubblishings"
+      )
+      @query = @publisher.books.query
+    end
+    
+    describe "reading" do
+      it "should provide the nested resource information to #resource_path" do
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook })
+        stub_mocks!
+        @adapter.read(@query)
+      end
+    end
+  end
+  
   def stub_mocks!
     {
       :resource_path => "mock",

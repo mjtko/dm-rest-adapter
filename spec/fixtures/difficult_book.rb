@@ -8,5 +8,5 @@ class DifficultBook
   property :title,      String
   property :author,     String
   
-  belongs_to :publisher
+  belongs_to :publisher, :nested => true
 end

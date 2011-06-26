@@ -6,6 +6,4 @@ class Publisher
   property :name,       String
   
   has n, :books, 'DifficultBook'
-  
-  #nested :books
 end
