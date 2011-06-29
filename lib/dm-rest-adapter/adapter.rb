@@ -12,8 +12,11 @@ module DataMapperRest
     def create(resources)
       resources.each do |resource|
         model = resource.model
-
-        response = @rest_client[@format.resource_path(:model => model)].post(
+        
+        path_items = extract_parent_items_from_resource(resource)
+        path_items << { :model => model }
+        
+        response = @rest_client[@format.resource_path(*path_items)].post(
           @format.string_representation(resource),
           :content_type => @format.mime, :accept => @format.mime
         )
@@ -132,6 +135,19 @@ module DataMapperRest
       return nil unless (key_condition = conditions.select { |o| o.subject.key? }).size == 1
 
       key_condition.first.value
+    end
+    
+    def extract_parent_items_from_resource(resource)
+      model = resource.model
+      # This really needs rethinking... each/break isn't right
+      model.relationships.collect do |relationship|
+        if relationship.inverse.options[:nested]
+          if relationship.loaded?(resource)
+            # TODO: Recursively walk back up the tree
+            break [ { :model => relationship.target_model, :key => relationship.source_key.get(resource).join } ]
+          end
+        end
+      end.compact
     end
     
     def extract_parent_items_from_query(query)
