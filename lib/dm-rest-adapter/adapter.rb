@@ -62,10 +62,13 @@ module DataMapperRest
         model = resource.model
         key   = model.key
         id    = key.get(resource).join
+        
+        path_items = extract_parent_items_from_resource(resource)
+        path_items << { :model => model, :key => id }
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
-        response = @rest_client[@format.resource_path(:model => model, :key => id)].put(
+        response = @rest_client[@format.resource_path(*path_items)].put(
           @format.string_representation(resource),
           :content_type => @format.mime, :accept => @format.mime
         )
@@ -139,7 +142,10 @@ module DataMapperRest
     
     def extract_parent_items_from_resource(resource)
       model = resource.model
-      # This really needs rethinking... each/break isn't right
+      
+      return [] unless model.relationships.any? { |relationship| relationship.inverse.options[:nested] }
+      
+      # FIXME: This is far too hacky. Change it.
       model.relationships.collect do |relationship|
         if relationship.inverse.options[:nested]
           if relationship.loaded?(resource)

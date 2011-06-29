@@ -374,8 +374,10 @@ describe DataMapper::Adapters::RestAdapter do
     before(:each) do
       @publisher  = Publisher.new(
         :id => 1,
+        :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
         :name => "Dan's Kubblishings"
       )
+      @publisher.persisted_state = DataMapper::Resource::State::Persisted.new(@publisher)
       @query = @publisher.books.query
     end
     
@@ -389,12 +391,6 @@ describe DataMapper::Adapters::RestAdapter do
     
     describe "#create" do
       before(:each) do
-        @publisher = Publisher.new(
-          :id => 1,
-          :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
-          :name => "Dann's Kubblishings"
-        )
-        @publisher.persisted_state = DataMapper::Resource::State::Persisted.new(@publisher)
         @resource  = DifficultBook.new(
           :title => "DataMapper",
           :author => "Dan Kubb",
@@ -407,6 +403,24 @@ describe DataMapper::Adapters::RestAdapter do
         @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook })
         stub_mocks!
         @adapter.create(@resources)
+      end
+    end
+    
+    describe "#update" do
+      before(:each) do
+        @resource  = DifficultBook.new(
+          :id => 2,
+          :title => "DataMapper",
+          :author => "Dan Kubb",
+          :publisher => @publisher
+        )
+        @resources = [ @resource ]
+      end
+      
+      it "should provide the nested resource information to #resource_path" do
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook, :key => "2" })
+        stub_mocks!
+        @adapter.update({ DifficultBook.properties[:author] => "Chris Corbyn" }, @resources)
       end
     end
   end
