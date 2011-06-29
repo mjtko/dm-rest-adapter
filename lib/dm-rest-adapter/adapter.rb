@@ -83,7 +83,10 @@ module DataMapperRest
         key   = model.key
         id    = key.get(resource).join
         
-        response = @rest_client[@format.resource_path(:model => model, :key => id)].delete(
+        path_items = extract_parent_items_from_resource(resource)
+        path_items << { :model => model, :key => id }
+        
+        response = @rest_client[@format.resource_path(*path_items)].delete(
           :accept => @format.mime
         )
 

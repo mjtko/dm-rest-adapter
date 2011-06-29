@@ -423,6 +423,24 @@ describe DataMapper::Adapters::RestAdapter do
         @adapter.update({ DifficultBook.properties[:author] => "Chris Corbyn" }, @resources)
       end
     end
+    
+    describe "#delete" do
+      before(:each) do
+        @resource  = DifficultBook.new(
+          :id => 2,
+          :title => "DataMapper",
+          :author => "Dan Kubb",
+          :publisher => @publisher
+        )
+        @resources = [ @resource ]
+      end
+      
+      it "should provide the nested resource information to #resource_path" do
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook, :key => "2" })
+        stub_mocks!
+        @adapter.delete(@resources)
+      end
+    end
   end
   
   def stub_mocks!
