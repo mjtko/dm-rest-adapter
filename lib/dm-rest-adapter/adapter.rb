@@ -156,12 +156,28 @@ module DataMapperRest
     end
 
     def extract_params_from_query(query)
+      model = query.model
       conditions = query.conditions
 
       return {} unless conditions.kind_of?(DataMapper::Query::Conditions::AndOperation)
       return {} if conditions.any? { |o| o.subject.key? }
-
-      query.options
+      
+      query.options.reject do |k, v|
+        [:fields, :conditions].include?(k)
+      end.merge(extract_params_from_conditions(conditions))
+    end
+    
+    def extract_params_from_conditions(conditions)
+      params = conditions.collect do |operand|
+        if operand.kind_of?(DataMapper::Query::Conditions::EqualToComparison)
+          if operand.relationship? && !operand.subject.inverse.options[:nested]
+            mapping = operand.foreign_key_mapping
+            { mapping.subject.field => mapping.value }
+          end
+        end
+      end
+      
+      params.compact.reduce({}) { |memo, v| memo.merge(v) }
     end
   end
 end

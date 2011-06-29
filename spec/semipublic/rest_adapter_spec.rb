@@ -14,6 +14,8 @@ describe DataMapper::Adapters::RestAdapter do
     @adapter.rest_client = double("rest_client")
     
     @response = double("response")
+    
+    DataMapper.setup(@adapter)
   end
   
   describe "#initialize" do
@@ -304,17 +306,80 @@ describe DataMapper::Adapters::RestAdapter do
     end
   end
   
+  describe "one-to-one relationship" do
+    before(:each) do
+      @book = DifficultBook.new(
+        :id => 1,
+        :title => "DataMapper",
+        :author => "Dann Kubb"
+      )
+      @book.persisted_state = DataMapper::Resource::State::Persisted.new(@book)
+    end
+    
+    describe "#read" do
+      it "should fetch the resource with the parent ID" do
+        @format.should_receive(:resource_path).with({ :model => BookCover })
+        # FIXME: Guessing the types is getting messy. Symbolize all the keys in the params and stringify all the values.
+        @adapter.rest_client.should_receive(:get).with(
+          { :params => { 'book_id' => 1, :offset => 0, :limit => 1 }, :accept => "application/mock" }
+        ).and_return(@response)
+        stub_mocks!
+        DataMapper.repository(:test) { @book.cover } # no idea why this doesn't work!
+      end
+    end
+  end
+  
+  describe "many-to-one relationship" do
+    before(:each) do
+      @book = DifficultBook.new(
+        :id => 1,
+        :title => "DataMapper",
+        :author => "Dann Kubb",
+        :publisher_id => 2
+      )
+    end
+    
+    describe "#read" do
+      it "should fetch the resource with the parent ID" do
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => 2 })
+        stub_mocks!
+        DataMapper.repository(:test) { @book.publisher }
+      end
+    end
+  end
+  
+  describe "one-to-many relationship" do
+    before(:each) do
+      @book = DifficultBook.new(
+        :id => 1,
+        :title => "DataMapper",
+        :author => "Dann Kubb",
+      )
+      @query = @book.chapters.query
+    end
+    
+    describe "#read" do
+      it "should fetch the resource by passing the key as a query parameter" do
+        @format.should_receive(:resource_path).with({ :model => Chapter })
+        @adapter.rest_client.should_receive(:get).with(
+          { :params => { 'book_id' => 1 }, :accept => "application/mock" }
+        ).and_return(@response)
+        stub_mocks!
+        @adapter.read(@query)
+      end
+    end
+  end
+  
   describe "nested resources" do
     before(:each) do
       @publisher  = Publisher.new(
         :id => 1,
-        :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
         :name => "Dan's Kubblishings"
       )
       @query = @publisher.books.query
     end
     
-    describe "reading" do
+    describe "#read" do
       it "should provide the nested resource information to #resource_path" do
         @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook })
         stub_mocks!
