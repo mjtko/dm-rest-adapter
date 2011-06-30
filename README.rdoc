@@ -209,7 +209,7 @@ properties on your model.
 
 == TODO:
 
- * Nested resources.
- * Better support for associations.
+ * Deeply Nested resources.
  * More flexible formatting conventions.
- * Request Logging.
+ * Request Logging?
+ * More flexible URL structures.

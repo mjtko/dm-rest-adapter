@@ -378,10 +378,11 @@ describe DataMapper::Adapters::RestAdapter do
         :name => "Dan's Kubblishings"
       )
       @publisher.persisted_state = DataMapper::Resource::State::Persisted.new(@publisher)
-      @query = @publisher.books.query
     end
     
     describe "#read" do
+      before(:each) { @query = @publisher.books.query }
+      
       it "should provide the nested resource information to #resource_path" do
         @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook })
         stub_mocks!
@@ -440,6 +441,30 @@ describe DataMapper::Adapters::RestAdapter do
         stub_mocks!
         @adapter.delete(@resources)
       end
+    end
+  end
+  
+  describe "deeply nested resource paths" do
+    before(:each) do
+      @book = DifficultBook.new(
+        :id => 1,
+        :publisher_id => 2,
+        :title => "DataMapper",
+        :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
+        :author => "Dann Kubb"
+      )
+      @book.persisted_state = DataMapper::Resource::State::Persisted.new(@book)
+      @query = @book.vendors.query
+    end
+    
+    it "should walk the object tree and pass all nested resource information to #resource_path" do
+      @format.should_receive(:resource_path).with(
+        { :model => Publisher, :key => "2" },
+        { :model => DifficultBook, :key => "1" },
+        { :model => Vendor }
+      )
+      stub_mocks!
+      @adapter.read(@query)
     end
   end
   

@@ -12,4 +12,5 @@ class DifficultBook
   belongs_to :publisher
   has n, :chapters
   has 1, :cover, 'BookCover'
+  has n, :vendors, :nested => true
 end

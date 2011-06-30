@@ -1,10 +1,9 @@
 module DataMapperRest
   # TODO: Follow redirects to newly created resources (existing bug)
+  #       Replace REXML with Nokogiri?
   #       Specs for parse errors (existing bug)
   #       Allow HTTP scheme to be specified in options (i.e. allow HTTPS) (existing bug)
-  #       Allow nested resources (existing bug)
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
-  #       Specs for associations (existing bug)
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
     attr_accessor :rest_client
@@ -148,15 +147,21 @@ module DataMapperRest
       
       return [] unless model.relationships.any? { |relationship| relationship.inverse.options[:nested] }
       
-      # FIXME: This is far too hacky. Change it.
       model.relationships.collect do |relationship|
         if relationship.inverse.options[:nested]
-          if relationship.loaded?(resource)
-            # TODO: Recursively walk back up the tree
-            break [ { :model => relationship.target_model, :key => relationship.source_key.get(resource).join } ]
+          case relationship
+            when DataMapper::Associations::ManyToOne::Relationship
+              if relationship.loaded?(resource)
+                extract_parent_items_from_resource(relationship.get(resource))
+              else
+                []
+              end << {
+                :model => relationship.target_model,
+                :key => relationship.source_key.get(resource).join
+              }.reject { |key, value| DataMapper::Ext.blank?(value) }
           end
         end
-      end.compact
+      end.flatten.compact
     end
     
     def extract_parent_items_from_query(query)
@@ -170,14 +175,14 @@ module DataMapperRest
           if operand.relationship? && !operand.subject.target_model.eql?(model)
             relationship = operand.subject
             if relationship.inverse.options[:nested]
-              {
+              extract_parent_items_from_resource(operand.value) << {
                 :model => relationship.target_model,
                 :key => relationship.target_key.get(operand.value).join
               }.reject { |key, value| DataMapper::Ext.blank?(value) }
             end
           end
         end
-      end.compact
+      end.flatten.compact
     end
 
     def extract_params_from_query(query)
