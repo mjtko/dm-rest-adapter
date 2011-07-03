@@ -4,12 +4,12 @@ A DataMapper adapter for REST Web Services
 
 == Usage
 
-DM Rest Adapter provides a way to fetch and update resources from the web
-using the same DataMapper Resource classes you use when working with a
-database, or another repository backend.  The only difference is that you will
-use the Rest Adapter on your REST Resources.
+DataMapper REST Adapter provides a way to fetch and update resources from the
+web using the same DataMapper Resource classes you use when working with a
+database, or other type of repository.  The only difference is that you will
+use the REST Adapter on your REST Resources.
 
-The currently supported web formats are XML and JSON.
+The provided formats are XML and JSON.
 
 For example, using the default configuration, a resource at "/posts/1.xml" can
 be fetched simply by using:
@@ -20,9 +20,8 @@ be fetched simply by using:
  post.title = "A new title"
  post.save          # => PUT /posts/1.xml
  
-If the resource does not exist, nil is returned, or
-DataMapper::ObjectNotFoundError is raised if #get! was used to fetch the
-Resource.
+If the resource does not exist, nil is returned, or if you used #get!
+DataMapper::ObjectNotFoundError is raised.
 
 The following is an example of a Post model using XML, where the host settings
 simply point to localhost. In addition I have included a basic auth login
@@ -31,11 +30,14 @@ which will be used if your REST service requires authentication:
  DataMapper.setup(:default, {
    :adapter  => 'rest',
    :format   => 'xml',
+   :scheme   => 'https',
    :host     => 'localhost',
    :port     => 4000,
    :login    => 'user',
    :password => 'verys3crit'
  })
+
+Note the :scheme and :port are optional.
 
  class Post
    include DataMapper::Resource
@@ -45,26 +47,37 @@ which will be used if your REST service requires authentication:
    property :body,  Text
  end
 
-
-If you notice this looks exactly like a normal datamapper model. Every property
-you define will map itself with the xml returned or posted from/to the resource.
+If you notice this looks exactly like a normal DataMapper model. Every property
+you define will map itself with the XML returned or sent from/to the service.
 
 == Code
 
-Now for some code examples. DM Rest Adapter uses the same methods as datamapper
-including during creation.  You can still add validations and all the usual
-DataMapper niceties to your models.
+Now for some code examples.  DataMapper REST Adapter uses the same methods as
+DataMapper, including during creation.  You can still add validations and all
+the usual DataMapper niceties to your models.
 
  Post.first
  # => returns the object from the resource
+ 
  Post.get(1)
  # => returns the object from the resource
+ 
  p = Post.new(
    :title => "My awesome blog post",
    :body  => "I really have nothing to say..."
  )
+ 
  p.save
  # => saves the resource on the remote
+ 
+ p.comments
+ # => fetches post comments from the remote
+ 
+ p.comments.get(7)
+ # => fetches comment ID 7 from the remote
+ 
+ Post.all(:category => "datamapper", :limit => 2)
+ # => fetches the first two posts whose 'category' is "datamapper"
 
 == Additional Configuration
 
@@ -78,7 +91,7 @@ You can specify a non-standard extension (i.e. something other than ".json" or
    ...
  })
 
-If your URLs have no extension on them, pass an empty string, or nil.
+If your URLs have no extension on them, just pass an empty string, or nil.
 
 If your Resources map to a different path than the name of the model itself,
 you can specify the path fragment with #storage_names as with other adapters:
@@ -135,8 +148,14 @@ We can set this up as follows:
  comments = post.comments  # => /posts/1/comments.json
  
 DataMapper REST Adapter adds the :nested option to associations.  Setting this
-to true will fetch the resource(s) at a subpath of the URL from which the parent
-resource was loaded.
+to true will fetch the resource(s) at a subpath of the URL from which the
+parent resource was loaded.  You may nest your resources more than one level
+deep.
+
+Current limitation: Nesting currently only works for 'has n' and 'has 1'
+relationships.  For example, you can map back to a parent as a nested resource
+(I'm not sure what the semantics of this would be if you then fetched the child
+from that nested resource again, and so on...)
 
 == Exercise Caution
 
@@ -149,10 +168,35 @@ actually fetches all Posts and then returns the first of the collection.  There
 is not much that can be done about this and it just comes down to using the
 right tool for the job.
 
+If you have control of the web service itself, it is possible to optimize for
+such scenarios on the service-side.  Though DataMapper REST Adapter will filter
+responses that are returned from the service, it will provide hints via the
+query string.  For example:
+
+ Post.first
+ 
+actually queries for
+
+ /posts.xml?offset=0&limit=1
+
+Similarly,
+
+ Post.all(:category => "datamapper")
+
+will query
+
+ /posts.xml?category=datamapper
+
+It is not a requirement that the remote service pays attention to these hints,
+but doing so will reduce the amount of work done to fetch resources.  There are
+some obvious limitations as to what can be hinted at in the query string, such
+as, for example:
+
+ Post.all(:created_at.gte => 3.days.ago)
+
 == Expected Formats for Legacy Applications
 
-Work is scheduled to overcome this current limitation.  The currently expected
-formats are:
+The currently expected serialization formats are:
 
 === XML
 
@@ -209,7 +253,6 @@ properties on your model.
 
 == TODO:
 
- * Deeply Nested resources.
- * More flexible formatting conventions.
+ * More flexible formatting conventions (custom Format implementation)
+ * Embedded Resources (where a whole object-tree is returned in one response)
  * Request Logging?
- * More flexible URL structures.
