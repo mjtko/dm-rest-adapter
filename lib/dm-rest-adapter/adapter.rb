@@ -59,7 +59,7 @@ module DataMapperRest
       collection.select do |resource|
         model = resource.model
         key   = model.key
-        id    = key.get(resource).join
+        id    = key.get(resource).first
         
         path_items = extract_parent_items_from_resource(resource)
         path_items << { :model => model, :key => id }
@@ -79,7 +79,7 @@ module DataMapperRest
       collection.select do |resource|
         model = resource.model
         key   = model.key
-        id    = key.get(resource).join
+        id    = key.get(resource).first
         
         path_items = extract_parent_items_from_resource(resource)
         path_items << { :model => model, :key => id }
@@ -141,11 +141,11 @@ module DataMapperRest
       key_condition.first.value
     end
     
+    # Note that ManyToOne denotes the child end of a 'has 1' or a 'has n' relationship
     def extract_parent_items_from_resource(resource)
       model = resource.model
       
       nested_relationship = model.relationships.detect do |relationship|
-        # other side of a 'has n' or 'has 1'
         relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship) &&
           relationship.inverse.options[:nested]
       end
@@ -160,10 +160,11 @@ module DataMapperRest
       
       path_items << {
         :model => nested_relationship.target_model,
-        :key => nested_relationship.source_key.get(resource).join
-      }.reject { |key, value| DataMapper::Ext.blank?(value) }
+        :key => nested_relationship.source_key.get(resource).first
+      }.reject { |key, value| value.nil? }
     end
     
+    # Note that ManyToOne denotes the child end of a 'has 1' or a 'has n' relationship
     def extract_parent_items_from_query(query)
       model = query.model
       conditions = query.conditions
@@ -183,8 +184,8 @@ module DataMapperRest
       
       extract_parent_items_from_resource(nested_relationship_operand.value) << {
         :model => nested_relationship.target_model,
-        :key => nested_relationship.target_key.get(nested_relationship_operand.value).join
-      }.reject { |key, value| DataMapper::Ext.blank?(value) }
+        :key => nested_relationship.target_key.get(nested_relationship_operand.value).first
+      }.reject { |key, value| value.nil? }
     end
 
     def extract_params_from_query(query)

@@ -223,7 +223,7 @@ describe DataMapper::Adapters::RestAdapter do
     end
 
     it "should ask the format for the resource path using the key" do
-      @format.should_receive(:resource_path).with(:model => @resource.model, :key => "1")
+      @format.should_receive(:resource_path).with(:model => @resource.model, :key => 1)
       stub_mocks!
       @adapter.update({ Book.properties[:author] => "John Doe" }, @resources)
     end
@@ -282,7 +282,7 @@ describe DataMapper::Adapters::RestAdapter do
     end
 
     it "should ask the format for the resource path using the key" do
-      @format.should_receive(:resource_path).with(:model => @resource.model, :key => "1")
+      @format.should_receive(:resource_path).with(:model => @resource.model, :key => 1)
       stub_mocks!
       @adapter.delete(@resources)
     end
@@ -380,7 +380,7 @@ describe DataMapper::Adapters::RestAdapter do
       before(:each) { @query = @publisher.books.query }
       
       it "should provide the nested resource information to #resource_path" do
-        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook })
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => 1 }, { :model => DifficultBook })
         stub_mocks!
         @adapter.read(@query)
       end
@@ -397,7 +397,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
 
       it "should provide the nested resource information to #resource_path" do
-        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook })
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => 1 }, { :model => DifficultBook })
         stub_mocks!
         @adapter.create(@resources)
       end
@@ -415,7 +415,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
 
       it "should provide the nested resource information to #resource_path" do
-        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook, :key => "2" })
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => 1 }, { :model => DifficultBook, :key => 2 })
         stub_mocks!
         @adapter.update({ DifficultBook.properties[:author] => "Chris Corbyn" }, @resources)
       end
@@ -433,7 +433,7 @@ describe DataMapper::Adapters::RestAdapter do
       end
 
       it "should provide the nested resource information to #resource_path" do
-        @format.should_receive(:resource_path).with({ :model => Publisher, :key => "1" }, { :model => DifficultBook, :key => "2" })
+        @format.should_receive(:resource_path).with({ :model => Publisher, :key => 1 }, { :model => DifficultBook, :key => 2 })
         stub_mocks!
         @adapter.delete(@resources)
       end
@@ -455,8 +455,8 @@ describe DataMapper::Adapters::RestAdapter do
     
     it "should walk the object tree and pass all nested resource information to #resource_path" do
       @format.should_receive(:resource_path).with(
-        { :model => Publisher, :key => "2" },
-        { :model => DifficultBook, :key => "1" },
+        { :model => Publisher, :key => 2 },
+        { :model => DifficultBook, :key => 1 },
         { :model => Vendor }
       )
       stub_mocks!
