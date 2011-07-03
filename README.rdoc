@@ -37,7 +37,7 @@ which will be used if your REST service requires authentication:
    :password => 'verys3crit'
  })
 
-Note the :scheme and :port are optional.
+Note that :scheme and :port are optional.
 
  class Post
    include DataMapper::Resource
@@ -153,25 +153,25 @@ parent resource was loaded.  You may nest your resources more than one level
 deep.
 
 Current limitation: Nesting currently only works for 'has n' and 'has 1'
-relationships.  For example, you can map back to a parent as a nested resource
-(I'm not sure what the semantics of this would be if you then fetched the child
-from that nested resource again, and so on...)
+relationships.  For example, you can't map back to a parent as a nested
+resource (I'm not sure what the semantics of this would be if you then fetched
+the child from that nested resource again, and so on...)
 
 == Exercise Caution
 
-RESTful web services, while convenient, are not known for being fast to query.
+RESTful web services, while convenient, are not optimized for query performance.
 For example,
   
  Post.first
 
-actually fetches all Posts and then returns the first of the collection.  There
-is not much that can be done about this and it just comes down to using the
-right tool for the job.
+by default, actually fetches all Posts and then returns the first of the
+collection.  There is not much that can be done about this and it just comes
+down to using the right tool for the job.
 
 If you have control of the web service itself, it is possible to optimize for
-such scenarios on the service-side.  Though DataMapper REST Adapter will filter
-responses that are returned from the service, it will provide hints via the
-query string.  For example:
+some of these scenarios on the service-side.  Though DataMapper REST Adapter
+will filter responses that are returned from the service, it will provide
+hints via the query string.  For example:
 
  Post.first
  
@@ -221,8 +221,9 @@ For a single Post:
    <title>An awesome blog post</title>
  </post>
 
-The type attributes are ignored by DM Rest Adapter and typecasting is done by
-the properties on the model as usual, so the values are somewhat flexible.
+The type attributes are ignored by DataMapper Rest Adapter and typecasting is
+done by the properties on the model as usual, so the values are somewhat
+flexible.
 
 === JSON
 
