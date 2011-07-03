@@ -170,19 +170,21 @@ module DataMapperRest
       
       return [] unless conditions.kind_of?(DataMapper::Query::Conditions::AndOperation)
       
-      conditions.collect do |operand|
-        if operand.kind_of?(DataMapper::Query::Conditions::EqualToComparison)
-          if operand.relationship? && !operand.subject.target_model.eql?(model)
-            relationship = operand.subject
-            if relationship.inverse.options[:nested] && relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship)
-              extract_parent_items_from_resource(operand.value) << {
-                :model => relationship.target_model,
-                :key => relationship.target_key.get(operand.value).join
-              }.reject { |key, value| DataMapper::Ext.blank?(value) }
-            end
-          end
-        end
-      end.flatten.compact
+      nested_relationship_operand = conditions.detect do |operand|
+        operand.kind_of?(DataMapper::Query::Conditions::EqualToComparison) &&
+          operand.relationship? &&
+          operand.subject.kind_of?(DataMapper::Associations::ManyToOne::Relationship) &&
+          operand.subject.inverse.options[:nested]
+      end
+      
+      return [] unless nested_relationship_operand
+      
+      nested_relationship = nested_relationship_operand.subject
+      
+      extract_parent_items_from_resource(nested_relationship_operand.value) << {
+        :model => nested_relationship.target_model,
+        :key => nested_relationship.target_key.get(nested_relationship_operand.value).join
+      }.reject { |key, value| DataMapper::Ext.blank?(value) }
     end
 
     def extract_params_from_query(query)
