@@ -6,7 +6,7 @@ module DataMapperRest
       end
       
       def string_representation(resource)
-        resource.to_json
+        resource.to_json(:raw => true)
       end
       
       def parse_record(json, model)
@@ -24,6 +24,12 @@ module DataMapperRest
       end
       
       private
+      
+      def resource_as_hash(resource)
+        resource.model.properties.reduce({}) do |hash, property|
+          hash.merge({ property.field => property.dump(resource.__send__(property.name)) })
+        end
+      end
       
       def record_from_hash(hash, field_to_property)
         record = {}

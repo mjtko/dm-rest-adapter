@@ -10,10 +10,10 @@ describe DataMapperRest::Format::Json do
     before(:each) do
       @format = DataMapperRest::Format::Json.new
       @time = DateTime.now
-      @json = '{"id":1,"created_at":"' + @time.to_s + '","title":"Testing","author":"Testy McTesty"}'
     end
 
     it "returns a JSON string representing the resource" do
+      json = '{"id":1,"created_at":"' + @time.to_s + '","title":"Testing","author":"Testy McTesty"}'
       book = Book.new(
         :id         => 1,
         :created_at => @time,
@@ -21,7 +21,26 @@ describe DataMapperRest::Format::Json do
         :author     => "Testy McTesty"
       )
       book_json = @format.string_representation(book)
-      book_json.should == @json
+      book_json.should == json
+    end
+    
+    context "with a complex resource" do
+      it "returns a JSON string representing the resource" do
+        json = '{"id":1,"name":"Testing","book_id":7}'
+        book = DifficultBook.new(
+          :id         => 7,
+          :created_at => @time,
+          :title      => "Testing",
+          :author     => "Testy McTesty"
+        )
+        vendor = Vendor.new(
+          :id => 1,
+          :name => "Testing",
+          :book => book
+        )
+        vendor_json = @format.string_representation(vendor)
+        vendor_json.should == json
+      end
     end
   end
   
