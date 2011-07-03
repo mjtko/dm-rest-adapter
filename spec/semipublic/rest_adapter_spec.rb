@@ -21,6 +21,7 @@ describe DataMapper::Adapters::RestAdapter do
   describe "#initialize" do
     before(:each) do
       @adapter = DataMapper::Adapters::RestAdapter.new(:test, DataMapper::Mash[{
+        :scheme   => "https",
         :host     => "test.tld",
         :port     => 81,
         :user     => "admin",
@@ -30,7 +31,7 @@ describe DataMapper::Adapters::RestAdapter do
     end
 
     it "prepares a RestClient::Resource for the URI of the REST service" do
-      @adapter.rest_client.url.to_s.should == "http://admin:secret@test.tld:81"
+      @adapter.rest_client.url.to_s.should == "https://admin:secret@test.tld:81"
     end
   end
 

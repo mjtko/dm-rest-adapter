@@ -1,7 +1,6 @@
 module DataMapperRest
   # TODO: Follow redirects to newly created resources (existing bug)
-  #       Specs for parse errors (existing bug)
-  #       Allow HTTP scheme to be specified in options (i.e. allow HTTPS) (existing bug)
+  #       Specs for resource format parse errors (existing bug)
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
@@ -114,11 +113,11 @@ module DataMapperRest
     def normalized_uri
       @normalized_uri ||=
         begin
-          query = @options.except(:adapter, :user, :password, :host, :port, :path, :fragment)
+          query = @options.except(:adapter, :scheme, :user, :password, :host, :port, :path, :fragment)
           query = nil if query.empty?
 
           Addressable::URI.new(
-            :scheme       => "http",
+            :scheme       => @options[:scheme] || "http",
             :user         => @options[:user],
             :password     => @options[:password],
             :host         => @options[:host],
