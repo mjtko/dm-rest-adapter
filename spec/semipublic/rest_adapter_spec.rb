@@ -319,9 +319,8 @@ describe DataMapper::Adapters::RestAdapter do
     describe "#read" do
       it "should fetch the resource with the parent ID" do
         @format.should_receive(:resource_path).with({ :model => BookCover })
-        # FIXME: Guessing the types is getting messy. Symbolize all the keys in the params and stringify all the values.
         @adapter.rest_client.should_receive(:get).with(
-          { :params => { 'book_id' => 1, :offset => 0, :limit => 1 }, :accept => "application/mock" }
+          { :params => { :book_id => 1, :offset => 0, :limit => 1 }, :accept => "application/mock" }
         ).and_return(@response)
         stub_mocks!
         DataMapper.repository(:test) { @book.cover } # no idea why this doesn't work!
@@ -358,7 +357,7 @@ describe DataMapper::Adapters::RestAdapter do
       it "should fetch the resource by passing the key as a query parameter" do
         @format.should_receive(:resource_path).with({ :model => Chapter })
         @adapter.rest_client.should_receive(:get).with(
-          { :params => { 'book_id' => 1 }, :accept => "application/mock" }
+          { :params => { :book_id => 1 }, :accept => "application/mock" }
         ).and_return(@response)
         stub_mocks!
         @adapter.read(@query)
