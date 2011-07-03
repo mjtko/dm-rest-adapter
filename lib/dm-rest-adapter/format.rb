@@ -35,14 +35,22 @@ module DataMapperRest
         end
       end
       
+      def update_attributes(resource, body)
+        return if DataMapper::Ext.blank?(body)
+
+        model      = resource.model
+        properties = model.properties(repository_name)
+
+        parse_record(body, model).each do |key, value|
+          if property = properties[key.to_sym]
+            property.set!(resource, value)
+          end
+        end
+      end
+      
       def string_representation(resource)
         raise NotImplementedError,
           "#{self.class}#string_representation not implemented"
-      end
-      
-      def update_attributes(resource, body)
-        raise NotImplementedError,
-          "#{self.class}#update_attributes not implemented"
       end
       
       def parse_collection(body, model)
