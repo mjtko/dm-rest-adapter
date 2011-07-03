@@ -1,6 +1,5 @@
 module DataMapperRest
   # TODO: Follow redirects to newly created resources (existing bug)
-  #       Replace REXML with Nokogiri?
   #       Specs for parse errors (existing bug)
   #       Allow HTTP scheme to be specified in options (i.e. allow HTTPS) (existing bug)
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
@@ -145,23 +144,24 @@ module DataMapperRest
     def extract_parent_items_from_resource(resource)
       model = resource.model
       
-      return [] unless model.relationships.any? { |relationship| relationship.inverse.options[:nested] }
+      nested_relationship = model.relationships.detect do |relationship|
+        # other side of a 'has n' or 'has 1'
+        relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship) &&
+          relationship.inverse.options[:nested]
+      end
       
-      model.relationships.collect do |relationship|
-        if relationship.inverse.options[:nested]
-          case relationship
-            when DataMapper::Associations::ManyToOne::Relationship
-              if relationship.loaded?(resource)
-                extract_parent_items_from_resource(relationship.get(resource))
-              else
-                []
-              end << {
-                :model => relationship.target_model,
-                :key => relationship.source_key.get(resource).join
-              }.reject { |key, value| DataMapper::Ext.blank?(value) }
-          end
-        end
-      end.flatten.compact
+      return [] unless nested_relationship
+      
+      path_items = if nested_relationship.loaded?(resource)
+        extract_parent_items_from_resource(nested_relationship.get(resource))
+      else
+        []
+      end
+      
+      path_items << {
+        :model => nested_relationship.target_model,
+        :key => nested_relationship.source_key.get(resource).join
+      }.reject { |key, value| DataMapper::Ext.blank?(value) }
     end
     
     def extract_parent_items_from_query(query)
@@ -174,7 +174,7 @@ module DataMapperRest
         if operand.kind_of?(DataMapper::Query::Conditions::EqualToComparison)
           if operand.relationship? && !operand.subject.target_model.eql?(model)
             relationship = operand.subject
-            if relationship.inverse.options[:nested]
+            if relationship.inverse.options[:nested] && relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship)
               extract_parent_items_from_resource(operand.value) << {
                 :model => relationship.target_model,
                 :key => relationship.target_key.get(operand.value).join
