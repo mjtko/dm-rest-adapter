@@ -4,7 +4,7 @@ module DataMapperRest
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
-    attr_accessor :rest_client
+    attr_accessor :rest_client, :format
     
     def create(resources)
       resources.each do |resource|
@@ -103,6 +103,8 @@ module DataMapperRest
           @format = Format::Xml.new(@options.merge(:repository_name => name))
         when "json"
           @format = Format::Json.new(@options.merge(:repository_name => name))
+        when String
+          @format = Kernel.const_get(@options[:format]).new(@options.merge(:repository_name => name))
         else
           @format = @options[:format]
       end
