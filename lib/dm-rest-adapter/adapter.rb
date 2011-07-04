@@ -104,12 +104,22 @@ module DataMapperRest
         when "json"
           @format = Format::Json.new(@options.merge(:repository_name => name))
         when String
-          @format = Kernel.const_get(@options[:format]).new(@options.merge(:repository_name => name))
+          @format = load_format_from_string(@options[:format]).new(@options.merge(:repository_name => name))
         else
           @format = @options[:format]
       end
       
       @rest_client = RestClient::Resource.new(normalized_uri)
+    end
+    
+    def load_format_from_string(class_name)
+      canonical = if class_name.start_with?("::")
+        class_name.gsub(/^::/, "")
+      else
+        class_name
+      end
+      
+      canonical.split("::").reduce(Kernel) { |klass, name| klass.const_get(name) }
     end
 
     def normalized_uri
