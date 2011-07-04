@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version = "1.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Scott Burton @ Joyent Inc"]
-  s.date = %q{2011-06-16}
+  s.authors = [%q{Scott Burton @ Joyent Inc}]
+  s.date = %q{2011-07-04}
   s.description = %q{REST Adapter for DataMapper}
   s.email = %q{scott.burton [a] joyent [d] com}
   s.extra_rdoc_files = [
@@ -32,7 +32,11 @@ Gem::Specification.new do |s|
     "lib/dm-rest-adapter/format/xml.rb",
     "lib/dm-rest-adapter/spec/setup.rb",
     "spec/fixtures/book.rb",
+    "spec/fixtures/book_cover.rb",
+    "spec/fixtures/chapter.rb",
     "spec/fixtures/difficult_book.rb",
+    "spec/fixtures/publisher.rb",
+    "spec/fixtures/vendor.rb",
     "spec/rcov.opts",
     "spec/semipublic/format/json_spec.rb",
     "spec/semipublic/format/xml_spec.rb",
@@ -45,13 +49,17 @@ Gem::Specification.new do |s|
     "tasks/yardstick.rake"
   ]
   s.homepage = %q{http://github.com/datamapper/dm-rest-adapter}
-  s.require_paths = ["lib"]
+  s.require_paths = [%q{lib}]
   s.rubyforge_project = %q{datamapper}
-  s.rubygems_version = %q{1.6.2}
+  s.rubygems_version = %q{1.8.5}
   s.summary = %q{REST Adapter for DataMapper}
   s.test_files = [
     "spec/fixtures/book.rb",
+    "spec/fixtures/book_cover.rb",
+    "spec/fixtures/chapter.rb",
     "spec/fixtures/difficult_book.rb",
+    "spec/fixtures/publisher.rb",
+    "spec/fixtures/vendor.rb",
     "spec/semipublic/format/json_spec.rb",
     "spec/semipublic/format/xml_spec.rb",
     "spec/semipublic/rest_adapter_spec.rb",
