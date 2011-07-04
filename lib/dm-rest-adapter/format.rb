@@ -11,10 +11,6 @@ module DataMapperRest
         @repository_name = options.fetch(:repository_name, :default)
       end
 
-      def header
-        { "Content-Type" => @mime }
-      end
-
       def default_options
         DataMapper::Mash.new
       end
@@ -23,21 +19,38 @@ module DataMapperRest
         model.storage_name(repository_name)
       end
 
-      def resource_path(model, key = nil)
-        path = "#{resource_name(model)}"
-        path << "/#{key}"       if key
-        path << ".#{extension}" if extension
-        path
+      def resource_path(*path_fragments)
+        path = path_fragments.reduce("") do |memo, fragment|
+          model = fragment[:model]
+          key   = fragment[:key]
+          memo << "#{resource_name(model)}/"
+          memo << "#{key}/" if key
+          memo
+        end.chomp("/")
+        
+        if extension
+          path + ".#{extension}"
+        else
+          path
+        end
+      end
+      
+      def update_attributes(resource, body)
+        return if DataMapper::Ext.blank?(body)
+
+        model      = resource.model
+        properties = model.properties(repository_name)
+
+        parse_record(body, model).each do |key, value|
+          if property = properties[key.to_sym]
+            property.set!(resource, value)
+          end
+        end
       end
       
       def string_representation(resource)
         raise NotImplementedError,
           "#{self.class}#string_representation not implemented"
-      end
-      
-      def update_attributes(resource, body)
-        raise NotImplementedError,
-          "#{self.class}#update_attributes not implemented"
       end
       
       def parse_collection(body, model)

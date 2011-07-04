@@ -1,53 +1,10 @@
 require 'spec_helper'
 
 describe DataMapperRest::Format::Json do
-  describe "uncustomized" do
-    subject { DataMapperRest::Format::Json.new }
-    
-    its(:mime) { should == "application/json" }
-    its(:extension) { should == "json" }
-    
-    it "appends the default extension to the resource path" do
-      format = DataMapperRest::Format::Json.new
-      format.resource_path(Book.new.model).should == "books.json"
-    end
-  end
-
-  describe "custom extension" do
-    subject { DataMapperRest::Format::Json.new(:extension => "yml") }
-    
-    its(:mime) { should == "application/json" }
-    its(:extension) { should == "yml" }
-    
-    it "appends the extension to the resource path" do
-      format = DataMapperRest::Format::Json.new(:extension => "data")
-      format.resource_path(Book.new.model).should == "books.data"
-    end
-  end
-
-  describe "no extension" do
-    subject { DataMapperRest::Format::Json.new(:extension => nil) }
-    
-    its(:mime) { should == "application/json" }
-    its(:extension) { should be_nil }
-    
-    it "does not append an extension to the resource path" do
-      format = DataMapperRest::Format::Json.new(:extension => nil)
-      format.resource_path(Book.new.model).should == "books"
-    end
-  end
-
-  describe "empty extension" do
-    subject { DataMapperRest::Format::Json.new(:extension => "") }
-    
-    its(:mime) { should == "application/json" }
-    its(:extension) { should be_nil }
-    
-    it "does not append an extension to the resource path" do
-      format = DataMapperRest::Format::Json.new(:extension => nil)
-      format.resource_path(Book.new.model).should == "books"
-    end
-  end
+  let(:default_mime) { "application/json" }
+  let(:default_extension) { "json" }
+  
+  it_should_behave_like "a Format"
   
   describe "#string_representation" do
     before(:each) do

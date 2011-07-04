@@ -15,7 +15,7 @@ group :development do
   gem 'dm-validations', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}"
   gem 'jeweler',        '~> 1.5.2'
   gem 'rake',           '~> 0.8.7'
-  gem 'rspec',          '~> 2.6'
+  gem 'rspec',          '~> 1.3'
 
 end
 
