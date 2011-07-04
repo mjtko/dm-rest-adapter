@@ -7,8 +7,7 @@ REPO_POSTFIX = SOURCE == :path ? ''                                : '.git'
 DATAMAPPER   = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'http://github.com/datamapper'
 DM_VERSION   = '~> 1.1.1'
 
-gem 'dm-serializer', :git => 'git://github.com/d11wtq/dm-serializer.git', :branch => 'feature/field-names'
-#gem 'dm-serializer', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-serializer#{REPO_POSTFIX}"
+gem 'dm-serializer', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-serializer#{REPO_POSTFIX}"
 
 group :development do
 
