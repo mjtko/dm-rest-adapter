@@ -16,7 +16,16 @@ module DataMapperRest
         response = @rest_client[@format.resource_path(*path_items)].post(
           @format.string_representation(resource),
           :content_type => @format.mime, :accept => @format.mime
-        )
+        ) do |response, request, result, &block|
+          # See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2 for HTTP response 201
+          if @options[:allow_post_redirect] && [201, 301, 302, 307].include?(response.code)
+            args[:method] = :get
+            response.args.delete(:payload)
+            response.follow_redirection(request, result, &block)
+          else
+            response.return!(request, result, &block)
+          end
+        end
 
         @format.update_attributes(resource, response.body)
       end
