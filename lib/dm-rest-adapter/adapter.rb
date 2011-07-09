@@ -1,6 +1,5 @@
 module DataMapperRest
-  # TODO: Follow redirects to newly created resources (existing bug)
-  #       Specs for resource format parse errors (existing bug)
+  # TODO: Specs for resource format parse errors (existing bug)
   #       Map properties to field names for #create/#update instead of assuming they match (existing bug)
 
   class Adapter < DataMapper::Adapters::AbstractAdapter
