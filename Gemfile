@@ -11,8 +11,8 @@ gem 'dm-serializer', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-serializer#{REPO_PO
 gem 'rest-client',  '~> 1.6.3'
 
 gem 'multi_json',  '~> 1.0.3'
-gem 'json',        '>= 1.4.6', '~> 1.5.1'
-gem 'json_pure',   '>= 1.4.6', '~> 1.5.1'
+gem 'json',        '>= 1.4.6', '<= 1.5.2'
+gem 'json_pure',   '>= 1.4.6', '<= 1.5.2'
 
 group :development do
 
