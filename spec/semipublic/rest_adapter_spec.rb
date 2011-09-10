@@ -320,7 +320,7 @@ describe DataMapper::Adapters::RestAdapter do
         :title => "DataMapper",
         :author => "Dann Kubb"
       )
-      @book.persisted_state = DataMapper::Resource::State::Persisted.new(@book)
+      @book.persistence_state = DataMapper::Resource::PersistenceState::Persisted.new(@book)
     end
 
     describe "#read" do
@@ -379,7 +379,7 @@ describe DataMapper::Adapters::RestAdapter do
         :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
         :name => "Dan's Kubblishings"
       )
-      @publisher.persisted_state = DataMapper::Resource::State::Persisted.new(@publisher)
+      @publisher.persistence_state = DataMapper::Resource::PersistenceState::Persisted.new(@publisher)
     end
 
     describe "#read" do
@@ -455,7 +455,7 @@ describe DataMapper::Adapters::RestAdapter do
         :created_at => DateTime.parse("2009-05-17T22:38:42-07:00"),
         :author => "Dann Kubb"
       )
-      @book.persisted_state = DataMapper::Resource::State::Persisted.new(@book)
+      @book.persistence_state = DataMapper::Resource::PersistenceState::Persisted.new(@book)
       @query = @book.vendors.query
     end
     
