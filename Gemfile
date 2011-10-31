@@ -10,8 +10,8 @@ DM_VERSION   = '~> 1.2.0'
 gem 'dm-serializer', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-serializer#{REPO_POSTFIX}", :branch => "release-1.2"
 
 gem 'multi_json',  '~> 1.0.3'
-gem 'json',        '>= 1.4.6', '<= 1.5.4'
-gem 'json_pure',   '>= 1.4.6', '<= 1.5.4'
+gem 'json',        '>= 1.4.6'
+gem 'json_pure',   '>= 1.4.6'
 
 group :development do
 
