@@ -133,22 +133,6 @@ module DataMapperRest
     def normalized_uri
       @normalized_uri ||=
         begin
-          query = @options.reject do |k, v|
-            [
-              :adapter,
-              :scheme,
-              :user,
-              :password,
-              :host,
-              :port,
-              :path,
-              :fragment,
-              :format,
-              :extension
-            ].include?(k.to_sym)
-          end
-          query = nil if query.empty?
-
           Addressable::URI.new(
             :scheme       => @options[:scheme] || "http",
             :user         => @options[:user],
@@ -156,7 +140,6 @@ module DataMapperRest
             :host         => @options[:host],
             :port         => @options[:port],
             :path         => @options[:path],
-            :query_values => query,
             :fragment     => @options[:fragment]
           )
         end
