@@ -133,7 +133,20 @@ module DataMapperRest
     def normalized_uri
       @normalized_uri ||=
         begin
-          query = @options.except(:adapter, :scheme, :user, :password, :host, :port, :path, :fragment)
+          query = @options.reject do |k, v|
+            [
+              :adapter,
+              :scheme,
+              :user,
+              :password,
+              :host,
+              :port,
+              :path,
+              :fragment,
+              :format,
+              :extension
+            ].include?(k)
+          end
           query = nil if query.empty?
 
           Addressable::URI.new(
