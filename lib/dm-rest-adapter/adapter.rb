@@ -145,7 +145,7 @@ module DataMapperRest
               :fragment,
               :format,
               :extension
-            ].include?(k)
+            ].include?(k.to_sym)
           end
           query = nil if query.empty?
 
