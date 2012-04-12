@@ -71,7 +71,8 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<dm-serializer>, ["~> 1.2.0"])
-      s.add_runtime_dependency(%q<multi_json>, ["~> 1.0.3"])
+      s.add_runtime_dependency(%q<multi_json>, ["~> 1.0"])
+      s.add_runtime_dependency(%q<rest-client>, ["~> 1.6"])
       s.add_runtime_dependency(%q<json>, [">= 1.4.6"])
       s.add_runtime_dependency(%q<json_pure>, [">= 1.4.6"])
       s.add_development_dependency(%q<dm-validations>, ["~> 1.2.0"])
