@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'pathname'
+require 'fakeweb'
 require 'dm-validations'
 
 # Support running specs with 'rake spec' and 'spec'
