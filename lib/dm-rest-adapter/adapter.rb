@@ -117,7 +117,7 @@ module DataMapperRest
           @format = @options[:format]
       end
       
-      @rest_client = RestClient::Resource.new(normalized_uri)
+      @rest_client = RestClient::Resource.new(normalized_uri, options_for_rest_client)
     end
     
     def load_format_from_string(class_name)
@@ -131,6 +131,7 @@ module DataMapperRest
     end
 
     def normalized_uri
+      # See also options_for_rest_client for how @options are used.
       @normalized_uri ||=
         begin
           Addressable::URI.new(
@@ -143,6 +144,15 @@ module DataMapperRest
             :fragment     => @options[:fragment]
           )
         end
+    end
+
+    def options_for_rest_client
+      # See also normalized_uri for how @options are used.
+      if @options.key?(:headers)
+        {:headers => @options[:headers]}
+      else
+        {}
+      end
     end
 
     def extract_id_from_query(query)
