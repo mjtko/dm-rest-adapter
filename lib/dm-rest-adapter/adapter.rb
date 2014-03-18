@@ -14,7 +14,7 @@ module DataMapperRest
         
         response = @rest_client[@format.resource_path(*path_items)].post(
           @format.string_representation(resource),
-          :content_type => @format.mime, :accept => @format.mime
+          'Content-Type' => @format.mime, 'Accept' => @format.mime
         ) do |response, request, result, &block|
           # See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2 for HTTP response 201
           if @options[:follow_on_create] && [201, 301, 302, 307].include?(response.code)
@@ -39,7 +39,7 @@ module DataMapperRest
         begin
           path_items << { :model => model, :key => id }
           response = @rest_client[@format.resource_path(*path_items)].get(
-            :accept => @format.mime
+            'Accept' => @format.mime
           )
           [ @format.parse_record(response.body, model) ]
         rescue RestClient::ResourceNotFound
@@ -49,7 +49,7 @@ module DataMapperRest
         path_items << { :model => model }
         query_options = {
           :params => extract_params_from_query(query),
-          :accept => @format.mime
+          'Accept' => @format.mime
         }
         query_options.delete(:params) if query_options[:params].empty?
         
@@ -75,7 +75,7 @@ module DataMapperRest
 
         response = @rest_client[@format.resource_path(*path_items)].put(
           @format.string_representation(resource),
-          :content_type => @format.mime, :accept => @format.mime
+          'Content-Type' => @format.mime, 'Accept' => @format.mime
         )
 
         @format.update_attributes(resource, response.body)
@@ -92,7 +92,7 @@ module DataMapperRest
         path_items << { :model => model, :key => id }
         
         response = @rest_client[@format.resource_path(*path_items)].delete(
-          :accept => @format.mime
+          'Accept' => @format.mime
         )
 
         (200..207).include?(response.code)
